@@ -1,1 +1,3 @@
 docs/_build
+go-examples/counter/vendor
+go-examples/counter/build

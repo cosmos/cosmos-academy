@@ -1,0 +1,12 @@
+package: github.com/cosmos/academy/go-examples/counter
+import:
+- package: github.com/tendermint/abci
+  version: ^0.5.0
+  subpackages:
+  - server
+  - types
+- package: github.com/tendermint/tmlibs
+  version: ^0.2.2
+  subpackages:
+  - common
+  - log

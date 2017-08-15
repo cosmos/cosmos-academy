@@ -1,0 +1,78 @@
+hash: 17b78fdbb550bce442f5c2b8b0517361b8d1e1120b47fd5d2b9bfcaf3f672214
+updated: 2017-08-15T11:50:27.188988568Z
+imports:
+- name: github.com/go-kit/kit
+  version: 69950137349e3e6781c1a54e4f7fd3803bd36765
+  subpackages:
+  - log
+  - log/level
+  - log/term
+- name: github.com/go-logfmt/logfmt
+  version: 390ab7935ee28ec6b286364bba9b4dd6410cb3d5
+- name: github.com/go-stack/stack
+  version: 54be5f394ed2c3e19dac9134a40a95ba5a017f7b
+- name: github.com/golang/protobuf
+  version: 0a4f71a498b7c4812f64969510bcb4eca251e33a
+  subpackages:
+  - proto
+  - ptypes/any
+- name: github.com/kr/logfmt
+  version: b84e30acd515aadc4b783ad4ff83aff3299bdfe0
+- name: github.com/pkg/errors
+  version: c605e284fe17294bda444b34710735b29d1a9d90
+- name: github.com/tendermint/abci
+  version: 864d1f80b36b440bde030a5c18d8ac3aa8c2949d
+  subpackages:
+  - server
+  - types
+- name: github.com/tendermint/go-wire
+  version: 5f88da3dbc1a72844e6dfaf274ce87f851d488eb
+  subpackages:
+  - data
+- name: github.com/tendermint/tmlibs
+  version: 7ce4da1eee6004d627e780c8fe91e96d9b99e459
+  subpackages:
+  - common
+  - log
+- name: golang.org/x/crypto
+  version: 7f7c0c2d75ebb4e32a21396ce36e87b6dadc91c9
+  subpackages:
+  - ripemd160
+- name: golang.org/x/net
+  version: 02ac38e2528ff4adea90f184d71a3faa04b4b1b0
+  subpackages:
+  - context
+  - http2
+  - http2/hpack
+  - idna
+  - internal/timeseries
+  - lex/httplex
+  - trace
+- name: golang.org/x/text
+  version: 836efe42bb4aa16aaa17b9c155d8813d336ed720
+  subpackages:
+  - secure/bidirule
+  - transform
+  - unicode/bidi
+  - unicode/norm
+- name: google.golang.org/genproto
+  version: b0a3dcfcd1a9bd48e63634bd8802960804cf8315
+  subpackages:
+  - googleapis/rpc/status
+- name: google.golang.org/grpc
+  version: 71260d21715bff9c2ac999d546349d4f4b77ef1d
+  subpackages:
+  - codes
+  - credentials
+  - grpclb/grpc_lb_v1
+  - grpclog
+  - internal
+  - keepalive
+  - metadata
+  - naming
+  - peer
+  - stats
+  - status
+  - tap
+  - transport
+testImports: []
