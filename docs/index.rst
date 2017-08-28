@@ -3,18 +3,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to COSMOS Academy's documentation!
-==========================================
+COSMOS Academy
+==============
+
+.. image:: assets/cosmos-academy-vertical.png
+   :height: 500px
+   :width: 500px
+   :alt: cosmos-academy-logo
+   :align: center
+
+
+Contents
+========
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 4
 
+   introduction/index.rst
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
