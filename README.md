@@ -8,7 +8,7 @@ Because technical constraints impede blockchain infrastructure from growing as r
 
 ## Curriculum
 
-Refer to the content in this [Gitbook] (https://cosmos-network.gitbooks.io/cosmos-academy/content/)
+Refer to the content in this [Gitbook](https://cosmos-network.gitbooks.io/cosmos-academy/content/)
 
 ## Developer Training
 - talks at conferences
