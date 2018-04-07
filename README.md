@@ -6,12 +6,14 @@ Blockchain development today has a very high barrier to entry. The number of wal
 
 Because technical constraints impede blockchain infrastructure from growing as rapidly as user adoption, it lends to the argument that indeed, we are in a bubble. The Cosmos Academy seeks to bridge that gap where the R&D team at Cosmos will educate and train the best and brightest minds in the world to become blockchain implementers.
 
-## Curriculum
+## Resources
 
-Refer to the content in this [Gitbook](https://cosmos-network.gitbooks.io/cosmos-academy/content/)
-
-## Developer Training
-- talks at conferences
-- workshops
-- meetups
-- online courses
+1. Introductory outline to the Cosmos Network and its ecosystem products [Gitbook](https://cosmos-network.gitbooks.io/cosmos-academy/content/)
+2. [Cosmos Blog](blog.cosmos.network)
+3. [Cosmos Website](cosmos.network)
+4. Tendermint [readthedocs](http://tendermint.readthedocs.io/projects/tools/en/master/index.html)
+5. [Community Telegram Chat](https://t.me/cosmosproject)
+6. [Developer Riot Chat](https://riot.cosmos.network)
+7. [Whitepaper](https://cosmos.network/whitepaper)
+8. [Roadmap](https://cosmos.network/roadmap)
+9. [Conferences/Speaking Events](https://cosmos.network/events)
