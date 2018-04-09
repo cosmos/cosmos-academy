@@ -9,11 +9,12 @@ Because technical constraints impede blockchain infrastructure from growing as r
 ## Resources
 
 1. Introductory outline to the Cosmos Network and its ecosystem products [Gitbook](https://cosmos-network.gitbooks.io/cosmos-academy/content/)
-2. [Cosmos Blog](blog.cosmos.network)
-3. [Cosmos Website](cosmos.network)
+2. [Cosmos Blog](https://blog.cosmos.network)
+3. [Cosmos Website](https://cosmos.network)
 4. Tendermint [readthedocs](http://tendermint.readthedocs.io/projects/tools/en/master/index.html)
 5. [Community Telegram Chat](https://t.me/cosmosproject)
 6. [Developer Riot Chat](https://riot.cosmos.network)
-7. [Whitepaper](https://cosmos.network/whitepaper)
+7. [Whitepaper](https://cosmos.network/whitepaper) 
+    [Whitepaper Chinese Version](https://github.com/bianjieai/translation/blob/master/Cosmos/Whitepaper_Chinese.md)   
 8. [Roadmap](https://cosmos.network/roadmap)
 9. [Conferences/Speaking Events](https://cosmos.network/events)
