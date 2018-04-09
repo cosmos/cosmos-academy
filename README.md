@@ -15,6 +15,6 @@ Because technical constraints impede blockchain infrastructure from growing as r
 5. [Community Telegram Chat](https://t.me/cosmosproject)
 6. [Developer Riot Chat](https://riot.cosmos.network)
 7. [Whitepaper](https://cosmos.network/whitepaper) 
-    [Whitepaper Chinese Version](https://github.com/bianjieai/translation/blob/master/Cosmos/Whitepaper_Chinese.md)   
 8. [Roadmap](https://cosmos.network/roadmap)
 9. [Conferences/Speaking Events](https://cosmos.network/events)
+10. [Whitepaper Chinese Version](https://github.com/bianjieai/translation/blob/master/Cosmos/Whitepaper_Chinese.md)   
