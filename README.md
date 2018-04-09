@@ -17,4 +17,4 @@ Because technical constraints impede blockchain infrastructure from growing as r
 7. [Whitepaper](https://cosmos.network/whitepaper) 
 8. [Roadmap](https://cosmos.network/roadmap)
 9. [Conferences/Speaking Events](https://cosmos.network/events)
-10. [Whitepaper Chinese Version](https://github.com/bianjieai/translation/blob/master/Cosmos/Whitepaper_Chinese.md)   
+10. [Whitepaper Chinese Version 中文版](https://github.com/bianjieai/translation/blob/master/Cosmos/Whitepaper_Chinese.md)   
