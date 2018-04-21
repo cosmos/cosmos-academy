@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# COSMOS Academy documentation build configuration file, created by
+# Cosmos Academy documentation build configuration file, created by
 # sphinx-quickstart on Mon Aug 14 11:52:37 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -38,16 +38,16 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = ['.rst', '.md']
-# source_suffix = '.rst'
+#source_suffix = ['.rst', '.md']
+source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
 
 # General information about the project.
-project = u'COSMOS Academy'
-copyright = u'2017, Adrian Brink'
-author = u'Adrian Brink'
+project = u'Cosmos Academy'
+copyright = u'2017, The Authors'
+author = u'The Authors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -114,7 +114,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'COSMOSAcademydoc'
+htmlhelp_basename = 'CosmosAcademydoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -141,8 +141,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'COSMOSAcademy.tex', u'COSMOS Academy Documentation',
-     u'Adrian Brink', 'manual'),
+    (master_doc, 'CosmosAcademy.tex', u'Cosmos Academy Documentation',
+     u'The Authors', 'manual'),
 ]
 
 
@@ -151,7 +151,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'cosmosacademy', u'COSMOS Academy Documentation',
+    (master_doc, 'cosmosacademy', u'Cosmos Academy Documentation',
      [author], 1)
 ]
 
@@ -162,8 +162,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'COSMOSAcademy', u'COSMOS Academy Documentation',
-     author, 'COSMOSAcademy', 'One line description of project.',
+    (master_doc, 'CosmosAcademy', u'Cosmos Academy Documentation',
+     author, 'CosmosAcademy', 'Learn about Cosmos',
      'Miscellaneous'),
 ]
 
