@@ -1,4 +1,4 @@
-Find the right repo
+Tendermint & Cosmos
 ===================
 
 blurb

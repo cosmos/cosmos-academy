@@ -14,61 +14,103 @@ Cosmos Academy
 
 Welcome to the Cosmos Academy! This page will orient you around the Tendermint/Cosmos tech stack. It is roughly organized from beginner => expert with higher priority to content most relevant to many users.
 
-Intro Videos
+Introduction
 ============
 
-The following are some excellent introductory videos for the unacquainted cosmosnaut:
+New here? Walk through some introductory content to get up to speed.
 
-- Researcher Sunny Agarwal — `Many Chains, One Ecosystem <https://www.youtube.com/watch?v=LApEkXJR_0M>`__
-- CTO Ethan Buchman — `What is Cosmos <https://www.youtube.com/watch?v=QExyiPjC3b8>`__
-- CEO Jae Kwon — `Crypto Economics <https://www.youtube.com/watch?v=8Eex-wQ5yYU>`__
+.. toctree::
+   :maxdepth: 2
+
+   content/introduction.rst
 
 Testnets
 ========
 
-Create or Join
-
-Read the Docs
-=============
-
-
-
-
-Two Organizations
-=================
-
-Cosmos is powered by code from two github organizations: `Tendermint <https://github.com/tendermint>`__ and `Cosmos <https://github.com/cosmos>`__. Roughly, Tendermint contains the lower-level repositories that serve as building blocks for the Cosmos SDK and related Cosmos projects.
+Either create you own (a good first step) or join an existing testnet.
 
 .. toctree::
    :maxdepth: 2
 
-   tendermint-and-cosmos.rst
+   content/testnets.rst
 
- 
+App Development
+===============
+
+Apps can be built either using the SDK or in any language for which an ABCI server exists.
+
+.. toctree::
+   :maxdepth: 2
+
+   content/app-development.rst
+
+Read The Docs
+=============
+
+Several core repositories have their tutorials and documentation versioned directly in the repo then built and hosted by Read The Docs. Here you get an overview of our core documentation.
+
+.. toctree::
+   :maxdepth: 2
+
+   content/read-the-docs.rst
+
+Tendermint & Cosmos
+===================
+
+Cosmos is powered by code from two GitHub organizations: Tendermint and Cosmos. Roughly, Tendermint contains the lower-level repositories that serve as building blocks for Cosmos projects.
+
+.. toctree::
+   :maxdepth: 2
+
+   content/tendermint-and-cosmos.rst
+
 Blog
 ====
 
-A list of all articles published on the `Medium blog <https://blog.cosmos.network/>`__.
+A list of all articles published on the Medium blog.
 
 .. toctree::
    :maxdepth: 2
 
-   medium-articles.rst
+   content/medium-articles.rst
 
-Videos
-======
+Talks
+=====
 
 Eat lunch at your desk and watch some YouTube.
 
 .. toctree::
    :maxdepth: 2
 
-   videos.rst
+   content/talks.rst
 
-Whitepaper
-==========
+Research
+========
+
+Here you'll find links to any and all technical research such as links to specifications and the like.
+
+.. toctree::
+   :maxdepth: 2
+
+   content/research.rst
 
 Community
 =========
 
-Reach out via the many way listed on the `community page <https://cosmos.network/community>`__.
+Find out the different ways to join or contribute to the community.
+
+.. toctree::
+   :maxdepth: 2
+
+   content/community.rst
+
+External Resources
+==================
+
+Educational content produced and hosted by partners or external contributors can be found here.
+
+.. toctree::
+   :maxdepth: 2
+
+   content/external-resources.rst
+
