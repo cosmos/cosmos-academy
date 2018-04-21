@@ -114,3 +114,12 @@ Educational content produced and hosted by partners or external contributors can
 
    content/external-resources.rst
 
+Glossary
+========
+
+A bunch of words defined
+
+.. toctree::
+   :maxdepth: 2
+
+   content/glossary.rst
