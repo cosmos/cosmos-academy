@@ -82,7 +82,7 @@ Voyager
 
 Cosmos Voyager is the official user interface for the Cosmos Network and the Cosmos Hub.
 
-- `GitHub <https://github.com/cosmos/voyager`__
+- `GitHub <https://github.com/cosmos/voyager>`__
 
 
 Lotion JS
