@@ -74,15 +74,15 @@ A list of all articles published on the Medium blog.
 
    content/medium-articles.rst
 
-Talks
-=====
+Videos
+======
 
 Eat lunch at your desk and watch some YouTube.
 
 .. toctree::
    :maxdepth: 2
 
-   content/talks.rst
+   content/videos.rst
 
 Research
 ========

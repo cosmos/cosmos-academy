@@ -16,11 +16,11 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-import urllib
 import json
+import os
+import urllib
 
 # -- General configuration ------------------------------------------------
 
@@ -170,14 +170,17 @@ texinfo_documents = [
 
 ######### get & make glossary ################
 
-urllib.urlretrieve('https://raw.githubusercontent.com/tendermint/aib-data/academy/json/glossary.json', filename='content/temp-glossary.json')
+the_url = 'https://raw.githubusercontent.com/tendermint/aib-data/academy/json/glossary.json'
+temp_file = 'content/temp-glossary.json'
+
+urllib.urlretrieve(the_url, filename=temp_file)
 
 glossy = open('content/glossary.rst', 'w')
 
 glossy.write("Glossary\n")
 glossy.write("========\n\n")
 
-my_json = json.load(open('content/temp-glossary.json'))
+my_json = json.load(open(temp_file))
 
 for item in my_json:
     # don't render an item that has no body
@@ -191,3 +194,4 @@ for item in my_json:
         glossy.write(item["body"]+"\n\n")
 
 glossy.close()
+os.remove(temp_file)
