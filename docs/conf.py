@@ -19,7 +19,8 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+import urllib
+import json
 
 # -- General configuration ------------------------------------------------
 
@@ -167,5 +168,26 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+######### get & make glossary ################
 
+urllib.urlretrieve('https://raw.githubusercontent.com/tendermint/aib-data/academy/json/glossary.json', filename='content/temp-glossary.json')
 
+glossy = open('content/glossary.rst', 'w')
+
+glossy.write("Glossary\n")
+glossy.write("========\n\n")
+
+my_json = json.load(open('content/temp-glossary.json'))
+
+for item in my_json:
+    # don't render an item that has no body
+    if item["body"] != "":
+        # get title length for formatting
+        title_length = len(item["title"])
+        header = "-" * title_length
+
+        glossy.write(item["title"]+"\n")
+        glossy.write(header+"\n\n")
+        glossy.write(item["body"]+"\n\n")
+
+glossy.close()
