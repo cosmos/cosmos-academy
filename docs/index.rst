@@ -64,6 +64,26 @@ Cosmos is powered by code from two GitHub organizations: Tendermint and Cosmos. 
 
    content/tendermint-and-cosmos.rst
 
+Concepts
+========
+
+Things that require more explanation than the glossary can provide
+
+.. toctree::
+   :maxdepth: 2
+
+   content/concept.rst
+
+Glossary
+========
+
+A bunch of words defined
+
+.. toctree::
+   :maxdepth: 2
+
+   content/glossary.rst
+
 Blog
 ====
 
@@ -113,13 +133,3 @@ Educational content produced and hosted by partners or external contributors can
    :maxdepth: 2
 
    content/external-resources.rst
-
-Glossary
-========
-
-A bunch of words defined
-
-.. toctree::
-   :maxdepth: 2
-
-   content/glossary.rst
