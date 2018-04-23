@@ -16,7 +16,7 @@ Tendermint
 Core Repositories
 ~~~~~~~~~~~~~~~~~
 
-blurb 
+blurb
 
 Tendermint
 ^^^^^^^^^^
@@ -64,6 +64,23 @@ A versioned and immutable AVL+ tree for persistent data.
 
 Cosmos
 ------
+
+Cosmos is a network of many independent blockchains, called zones. The zones are powered by Tendermint Core which provides a high-performance, secure PBFT-like consensus engine.
+
+We aim to design a protocol for an open network of distributed ledgers that can serve as a new foundation for future financial systems, based on principles of cryptoeconomics, consensus theory, transparency, and accountability.
+
+Cosmos Hub
+~~~~~~~~~~
+
+The main component in the Cosmos Network is the Cosmos Hub. The Hub is a multi-asset PoS cryptocurrency with a simple governance mechanism that allows independent blockchains \(zones\) to communicate to each other via an Inter-Blockchain Communication \(IBC\) protocol. This allows tokens to be transferred from one zone to another securely and quickly without the need for exchange liquidity between zones. Instead, all inter-zone token transfers go through the Cosmos Hub.
+
+The Hub keeps track of the total amount of tokens held by each zone, and isolates them if one of them fails.
+
+
+// Security in the Hub
+
+Note: this considers the Cosmos Network with one hub for simplicity, but any zone can become a hub
+
 
 Core Repositories
 ~~~~~~~~~~~~~~~~~
