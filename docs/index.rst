@@ -6,7 +6,7 @@
 Cosmos Academy
 ==============
 
-.. image:: assets/cosmos-academy-vertical.png
+.. image:: assets/cosmos-academy.png
    :height: 500px
    :width: 500px
    :alt: cosmos-academy-logo
