@@ -16,7 +16,7 @@ The following is a list of relevant articles published on our blog. `Go to Mediu
 - `Consensus Compare: Casper vs. Tendermint <https://blog.cosmos.network/consensus-compare-casper-vs-tendermint-6df154ad56ae>`__
 - `Medium needs Micropayments <https://blog.cosmos.network/medium-needs-micropayment-7088265a7d35>`__
 - `Why We Are Building the Internet of Blockchains <https://blog.cosmos.network/why-we-are-building-the-internet-of-blockchains-6e38f379669>`__
-- `https://blog.cosmos.network/cosmos-creating-interoperable-blockchains-part-1-2e7b747515d0 <https://blog.cosmos.network/cosmos-creating-interoperable-blockchains-part-1-2e7b747515d0>`__
+- `Cosmos: Creating Interoperable Blockchains <https://blog.cosmos.network/cosmos-creating-interoperable-blockchains-part-1-2e7b747515d0>`__
 - `BFT: The Most Secure Proof-of-Stake <https://blog.cosmos.network/bft-the-most-secure-proof-of-stake-9d79aceef099>`__
 - `Tendermint: From Then to Now <https://blog.cosmos.network/tendermint-from-then-to-now-ca5b203e6cb1>`__
 
