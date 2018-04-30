@@ -195,3 +195,78 @@ for item in my_json:
 
 glossy.close()
 os.remove(temp_file)
+
+######### get & make list of repos ################
+
+the_url2 = 'https://raw.githubusercontent.com/tendermint/aib-data/zach/repos/json/repositories.json'
+temp_file2 = 'content/temp-repos.json'
+
+urllib.urlretrieve(the_url2, filename=temp_file2)
+
+repos = open('content/tendermint-and-cosmos.rst', 'w')
+
+repos.write("Repositories\n")
+repos.write("============\n\n")
+
+# write something else ?
+
+my_json2 = json.load(open(temp_file2))
+
+def checkLength( highest, unsure ):
+    if unsure > highest:
+        return unsure
+    else:
+        return highest
+
+nL = 0
+gL = 0
+dL = 0
+# first get lengths for formatting info
+for item in my_json2["tendermint"]:
+        # get lengths for formatting
+        name_length = len(item["name"]) + 2
+        github_length = len(item["github"]) + 2
+        description_length = len(item["description"]) + 2
+
+        nL = checkLength(nL, name_length)
+        gL = checkLength(gL, github_length)
+        dL = checkLength(dL, description_length)
+
+n = "-" * nL
+g = "-" * gL
+d = "-" * dL
+
+top = "+%s+%s+%s+\n" % (n, g, d)
+
+repos.write(top)
+# then do another loop to write
+for item in my_json2["tendermint"]:
+        name_length = len(item["name"])
+        github_length = len(item["github"])
+        description_length = len(item["description"])
+
+        addN = nL - name_length - 2
+        addG = gL - github_length - 2
+        addD = dL - description_length - 2
+
+        spaceN = " " * addN
+        spaceG = " " * addG
+        spaceD = " " * addD
+
+        repos.write("| "+item["name"]+spaceN+" | "+item["github"]+spaceG+" | "+item["description"]+spaceD+" |\n")
+        repos.write(top)
+
+#repos.write(top)
+'''
+for item in my_json2["cosmos"]:
+        # get lengths for formatting
+        name_length = len(item["name"])
+        header = "-" * name_length
+
+        repos.write(item["name"]+"\n")
+        repos.write(header+"\n\n")
+        repos.write(item["github"]+"\n\n")
+        repos.write(item["description"]+"\n\n")
+'''
+repos.close()
+os.remove(temp_file2)
