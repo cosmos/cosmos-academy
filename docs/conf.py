@@ -203,12 +203,13 @@ temp_file2 = 'content/temp-repos.json'
 
 urllib.urlretrieve(the_url2, filename=temp_file2)
 
-repos = open('content/tendermint-and-cosmos.rst', 'w')
+repos = open('content/tendermint-and-cosmos.rst', 'a')
 
 repos.write("Repositories\n")
-repos.write("============\n\n")
+repos.write("------------\n\n")
 
-# write something else ?
+repos.write("Tendermint\n")
+repos.write("~~~~~~~~~~\n\n")
 
 my_json2 = json.load(open(temp_file2))
 
@@ -256,17 +257,50 @@ for item in my_json2["tendermint"]:
         repos.write("| "+item["name"]+spaceN+" | "+item["github"]+spaceG+" | "+item["description"]+spaceD+" |\n")
         repos.write(top)
 
-#repos.write(top)
-'''
+repos.write("\n")
+
+repos.write("Cosmos\n")
+repos.write("~~~~~~\n\n")
+# do it all over for cosmos repos
+# (yeah, this could be deduplicated)
+
+nL = 0
+gL = 0
+dL = 0
+# first get lengths for formatting info
 for item in my_json2["cosmos"]:
         # get lengths for formatting
-        name_length = len(item["name"])
-        header = "-" * name_length
+        name_length = len(item["name"]) + 2
+        github_length = len(item["github"]) + 2
+        description_length = len(item["description"]) + 2
 
-        repos.write(item["name"]+"\n")
-        repos.write(header+"\n\n")
-        repos.write(item["github"]+"\n\n")
-        repos.write(item["description"]+"\n\n")
-'''
+        nL = checkLength(nL, name_length)
+        gL = checkLength(gL, github_length)
+        dL = checkLength(dL, description_length)
+
+n = "-" * nL
+g = "-" * gL
+d = "-" * dL
+
+top = "+%s+%s+%s+\n" % (n, g, d)
+
+repos.write(top)
+# then do another loop to write
+for item in my_json2["cosmos"]:
+        name_length = len(item["name"])
+        github_length = len(item["github"])
+        description_length = len(item["description"])
+
+        addN = nL - name_length - 2
+        addG = gL - github_length - 2
+        addD = dL - description_length - 2
+
+        spaceN = " " * addN
+        spaceG = " " * addG
+        spaceD = " " * addD
+
+        repos.write("| "+item["name"]+spaceN+" | "+item["github"]+spaceG+" | "+item["description"]+spaceD+" |\n")
+        repos.write(top)
+
 repos.close()
 os.remove(temp_file2)

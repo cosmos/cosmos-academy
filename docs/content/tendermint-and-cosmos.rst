@@ -6,7 +6,7 @@ We are building a lot of software under two different GitHub organizations:
 - `Tendermint <https://github.com/tendermint>`__ and,
 - `Cosmos <https://github.com/cosmos>`__
 
-Repositories are classified as either "Core" or "Secondary" where the former generally produce binaries or code consumable by users and the latter provide building blocks for the former. Note that the status of "Secondary" repos is subject to change (i.e., they into "Core" repos) as we consolidate over time.
+Below, you'll find a links to the documentation of the core repositories then a list of relevant repositories in order of decreasing importance.
 
 Read The Docs
 -------------
@@ -18,5 +18,4 @@ Three core repositories have their documentation hosted on individual `Read The 
 - http://cosmos-sdk.readthedocs.io/en/master/
 
 Docs are built from the ``docs/`` directory in a project's respective repository. From within that directory you can run ``make html`` to build the docs then ``open _build/html/index.html`` to browse them locally.
-
 
