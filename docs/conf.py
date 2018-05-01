@@ -198,7 +198,7 @@ os.remove(temp_file)
 
 ######### get & make list of repos ################
 
-the_url2 = 'https://raw.githubusercontent.com/tendermint/aib-data/zach/repos/json/repositories.json'
+the_url2 = 'https://raw.githubusercontent.com/tendermint/aib-data/develop/json/repositories.json'
 temp_file2 = 'content/temp-repos.json'
 
 urllib.urlretrieve(the_url2, filename=temp_file2)
