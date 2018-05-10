@@ -21,4 +21,10 @@ Articles
 Code Examples
 -------------
 
-To see how others are building on the Tendermint/Cosmos stack, check out the `ecosystem page <https://tendermint.com/ecosystem>`__. To add your project to this page, make a Pull Request to `this file <https://github.com/tendermint/aib-data/blob/develop/json/ecosystem.json>`__.
+For examples of other project building on the Tendermint/Cosmos stack, check out the `ecosystem page <https://tendermint.com/ecosystem>`__. To add your project to this page, make a Pull Request to `this file <https://github.com/tendermint/aib-data/blob/develop/json/ecosystem.json>`__.
+
+Several repositories have an examples directory showing how to use the code or the tooling:
+
+- `Cosmos SDK examples <https://github.com/cosmos/cosmos-sdk/tree/master/examples>`__
+- `Tendermint examples <https://github.com/tendermint/tendermint/tree/master/docs/examples>`__
+- `ABCI examples <https://github.com/tendermint/abci/tree/master/example>`__
