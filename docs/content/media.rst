@@ -1,12 +1,15 @@
 Media
 =====
 
-A curated selection of various blog articles and videos:
+A selection of various blog articles and videos:
 
-Blog
-----
+Articles
+--------
 
-The following is a list of relevant articles published on our blog. `Go to Medium archive <https://blog.cosmos.network/archive>`__ to see all published articles.
+From Our Blog
+~~~~~~~~~~~~~
+
+The following is a list of relevant articles published on our blog. `Go to the Medium archive <https://blog.cosmos.network/archive>`__ to see all published articles.
 
 - `Understanding the value proposition of Cosmos <https://blog.cosmos.network/understanding-the-value-proposition-of-cosmos-ecaef63350d>`__
 - `The Cosmos Manifesto <https://blog.cosmos.network/ethereum-and-cosmos-bae657645e31>`__
@@ -20,20 +23,24 @@ The following is a list of relevant articles published on our blog. `Go to Mediu
 - `BFT: The Most Secure Proof-of-Stake <https://blog.cosmos.network/bft-the-most-secure-proof-of-stake-9d79aceef099>`__
 - `Tendermint: From Then to Now <https://blog.cosmos.network/tendermint-from-then-to-now-ca5b203e6cb1>`__
 
+Written By Others
+~~~~~~~~~~~~~~~~~
+
+- `Cosmos/Tendermint for Beginners <https://medium.com/@patrick.wieth/cosmos-tendermint-explained-for-real-idiots-ab4305cbb41>`__
+
 Videos
 ------
 
-Tutorials
-~~~~~~~~~
+Subscribe to our `YouTube channel <https://www.youtube.com/channel/UC8HFOUdnMnpoWmQMgeKoB3A/featured>`__ for the latest videos and tutorials.
 
-Coming soon!
+- `Many Chains, One Ecosystem <https://www.youtube.com/watch?v=LApEkXJR_0M>`__
+- `What is Cosmos? <https://www.youtube.com/watch?v=QExyiPjC3b8>`__
+- `Crypto Economics <https://www.youtube.com/watch?v=8Eex-wQ5yYU>`__
+- `The Internet of Blockchains <https://www.youtube.com/watch?v=t885QSY0sNQ>`__
+- `Scaling with Cosmos, Tendermint, and Plasma <https://www.youtube.com/watch?v=qFPwxHTIhBI>`__
+- `Tendermint Deep Dive <https://www.youtube.com/watch?v=lYX7VIVz578>`__
 
-Talks
-~~~~~
+Events
+------
 
-Conference or meetup presentations:
-
-Interviews
-~~~~~~~~~~
-
-Podcasts or live interviews from conferences:
+See our `events page <https://cosmos.network/events>`__ to find us in person.
