@@ -1,7 +1,7 @@
 Media
 =====
 
-A curated selection of various blog articles and videos:
+A selection of various blog articles and videos:
 
 Articles
 --------
@@ -26,22 +26,21 @@ The following is a list of relevant articles published on our blog. `Go to the M
 Written By Others
 ~~~~~~~~~~~~~~~~~
 
-- `Cosmos/Tendermint for Beginners <https://github.com/tendermint/tendermint/pull/1534/files#diff-9798b88f3648cc69eb8e31d09368f54d>`__
+- `Cosmos/Tendermint for Beginners <https://medium.com/@patrick.wieth/cosmos-tendermint-explained-for-real-idiots-ab4305cbb41>`__
 
 Videos
 ------
 
-Tutorials
-~~~~~~~~~
+Subscribe to our `YouTube channel <https://www.youtube.com/channel/UC8HFOUdnMnpoWmQMgeKoB3A/featured>`__ for the latest videos and tutorials.
 
-Coming soon!
+- `Many Chains, One Ecosystem <https://www.youtube.com/watch?v=LApEkXJR_0M>`__
+- `What is Cosmos? <https://www.youtube.com/watch?v=QExyiPjC3b8>`__
+- `Crypto Economics <https://www.youtube.com/watch?v=8Eex-wQ5yYU>`__
+- `The Internet of Blockchains <https://www.youtube.com/watch?v=t885QSY0sNQ>`__
+- `Scaling with Cosmos, Tendermint, and Plasma <https://www.youtube.com/watch?v=qFPwxHTIhBI>`__
+- `Tendermint Deep Dive <https://www.youtube.com/watch?v=lYX7VIVz578>`__
 
-Talks
-~~~~~
+Events
+------
 
-Conference or meetup presentations:
-
-Interviews
-~~~~~~~~~~
-
-Podcasts or live interviews from conferences:
+See our `events page <https://cosmos.network/events>`__ to find us in person.
