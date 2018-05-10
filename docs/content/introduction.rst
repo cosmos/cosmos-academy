@@ -1,8 +1,7 @@
 Introduction
 ============
 
-
-Below is the best introductory content. See the `Media page <./media.html>`__ for a comprehensive list of curated articles and
+Below is selected introductory content. See the `Media page <./media.html>`__ for a comprehensive list of curated articles and videos. Go to the `next section <./tendermint-and-cosmos.html>`__ for an overview of relevant repositories and documentation.
 
 Talks
 -----
