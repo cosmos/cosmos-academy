@@ -3,10 +3,13 @@ Media
 
 A curated selection of various blog articles and videos:
 
-Blog
-----
+Articles
+--------
 
-The following is a list of relevant articles published on our blog. `Go to Medium archive <https://blog.cosmos.network/archive>`__ to see all published articles.
+From Our Blog
+~~~~~~~~~~~~~
+
+The following is a list of relevant articles published on our blog. `Go to the Medium archive <https://blog.cosmos.network/archive>`__ to see all published articles.
 
 - `Understanding the value proposition of Cosmos <https://blog.cosmos.network/understanding-the-value-proposition-of-cosmos-ecaef63350d>`__
 - `The Cosmos Manifesto <https://blog.cosmos.network/ethereum-and-cosmos-bae657645e31>`__
@@ -19,6 +22,11 @@ The following is a list of relevant articles published on our blog. `Go to Mediu
 - `Cosmos: Creating Interoperable Blockchains <https://blog.cosmos.network/cosmos-creating-interoperable-blockchains-part-1-2e7b747515d0>`__
 - `BFT: The Most Secure Proof-of-Stake <https://blog.cosmos.network/bft-the-most-secure-proof-of-stake-9d79aceef099>`__
 - `Tendermint: From Then to Now <https://blog.cosmos.network/tendermint-from-then-to-now-ca5b203e6cb1>`__
+
+Written By Others
+~~~~~~~~~~~~~~~~~
+
+- `Cosmos/Tendermint for Beginners <https://github.com/tendermint/tendermint/pull/1534/files#diff-9798b88f3648cc69eb8e31d09368f54d>`__
 
 Videos
 ------

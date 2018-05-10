@@ -1,7 +1,8 @@
 Introduction
 ============
 
-A curated selection of introductory content for the unacquainted cosmonaut.
+
+Below is the best introductory content. See the `Media page <./media.html>`__ for a comprehensive list of curated articles and
 
 Talks
 -----
@@ -13,7 +14,9 @@ Talks
 Articles
 --------
 
-See the `Media page <./media.html>`__ for a curated list of articles, roughly in order of relevance.
+- `Understanding the value proposition of Cosmos <https://blog.cosmos.network/understanding-the-value-proposition-of-cosmos-ecaef63350d>`__
+- `A New Technology Stack for Alternative Economics <https://blog.cosmos.network/social-impact-thru-alternative-economic-systems-operation-ubi-63b274955028>`__
+- `Cosmos/Tendermint for Beginners <https://github.com/tendermint/tendermint/pull/1534/files#diff-9798b88f3648cc69eb8e31d09368f54d>`__
 
 Code Examples
 -------------
