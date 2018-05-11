@@ -1,6 +1,9 @@
 Introduction
 ============
 
+
+Welcome to Cosmos-Academy! The goal of Academy is to provide a set of resources for developers and enthusiasts to learn about the Cosmos ecosystem and how to develop on it.
+
 Below is selected introductory content. See the `Media page <./media.html>`__ for a comprehensive list of curated articles and videos. Go to the `next section <./tendermint-and-cosmos.html>`__ for an overview of relevant repositories and documentation.
 
 Talks
