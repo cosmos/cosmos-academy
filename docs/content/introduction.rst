@@ -4,7 +4,19 @@ Introduction
 
 Welcome to Cosmos-Academy! The goal of Academy is to provide a set of resources for developers and enthusiasts to learn about the Cosmos ecosystem and how to develop on it.
 
-Below is selected introductory content. See the `Media page <./media.html>`__ for a comprehensive list of curated articles and videos. Go to the `next section <./tendermint-and-cosmos.html>`__ for an overview of relevant repositories and documentation.
+What is Cosmos?
+---------------
+
+Cosmos is an ecosystem of blockchains and decentralised applications that can scale and interoperate with each other. This ecosystem comes with a wide variety of tools designed to make the life of developers easy. No single framework can satisfy all use case. This is why we have built many modular tools that are all compatible with each o
+
+Get started
+-----------
+
+If you are new to Cosmos, you can get started with the `Tendermint and Cosmos section <./tendermint-and-cosmos.html>`__ to get yourself acquainted with the high-level concepts of the ecosystem.
+
+If you are already familiar with the high-level concepts of the Cosmos ecosystem and cannot wait to start developping, you can directly jump to our `Application Development section <./app-development.html>`__ 
+
+Also see the `Media page <./media.html>`__ for a comprehensive list of curated articles and videos. 
 
 Talks
 -----
