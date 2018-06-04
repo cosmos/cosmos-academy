@@ -40,6 +40,13 @@ Subscribe to our `YouTube channel <https://www.youtube.com/channel/UC8HFOUdnMnpo
 - `Scaling with Cosmos, Tendermint, and Plasma <https://www.youtube.com/watch?v=qFPwxHTIhBI>`__
 - `Tendermint Deep Dive <https://www.youtube.com/watch?v=lYX7VIVz578>`__
 
+Presentations
+-------------
+
+You'll find some the following slides used in the above videos or at any of the events below. 
+
+- `Presentations <https://github.com/cosmos/cosmos-academy/tree/master/presentations>`__
+
 Events
 ------
 
