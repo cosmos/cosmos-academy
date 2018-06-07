@@ -22,17 +22,7 @@ New here? Walk through some introductory content to get up to speed.
 .. toctree::
    :maxdepth: 2
 
-   content/introduction.rst
-
-Tendermint & Cosmos
-===================
-
-Cosmos is powered by code from two GitHub organizations: Tendermint and Cosmos. Roughly, Tendermint contains the lower-level repositories that serve as building blocks for Cosmos projects.
-
-.. toctree::
-   :maxdepth: 2
-
-   content/tendermint-and-cosmos.rst
+   content/introduction.md
 
 Application Development
 =======================
@@ -43,7 +33,7 @@ Discover the various development frameworks available to build your blockchain a
 .. toctree::
    :maxdepth: 2
 
-   content/app-development.rst
+   content/app-development.md
 
 Testnets
 ========
@@ -53,7 +43,7 @@ Create a testnet for your application or join an existing one.
 .. toctree::
    :maxdepth: 2
 
-   content/testnets.rst
+   content/testnets.md
 
 Glossary
 ========
@@ -61,10 +51,9 @@ Glossary
 A bunch of words defined
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   content/glossary.rst
-
+   content/glossary.md
 
 Concepts
 ========
@@ -74,7 +63,7 @@ Things that require more explanation than the glossary can provide
 .. toctree::
    :maxdepth: 2
 
-   content/concepts.rst
+   content/concepts.md
 
 Research
 ========
@@ -84,7 +73,7 @@ Here you'll find links to any and all technical research such as links to specif
 .. toctree::
    :maxdepth: 2
 
-   content/research.rst
+   content/research.md
 
 Media
 =====
@@ -94,7 +83,7 @@ Blogs and videos
 .. toctree::
    :maxdepth: 2
 
-   content/media.rst
+   content/media.md
 
 Community
 =========
@@ -104,7 +93,7 @@ Find out the different ways to join or contribute to the community.
 .. toctree::
    :maxdepth: 2
 
-   content/community.rst
+   content/community.md
 
 External Resources
 ==================
@@ -114,4 +103,4 @@ Educational content produced and hosted by partners or external contributors can
 .. toctree::
    :maxdepth: 2
 
-   content/external-resources.rst
+   content/external-resources.md

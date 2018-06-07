@@ -39,8 +39,14 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-#source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+
+from recommonmark.parser import CommonMarkParser
+
+source_parsers = {
+    '.md': CommonMarkParser,
+}
+
+source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
@@ -195,112 +201,3 @@ for item in my_json:
 
 glossy.close()
 os.remove(temp_file)
-
-######### get & make list of repos ################
-
-the_url2 = 'https://raw.githubusercontent.com/tendermint/aib-data/develop/json/repositories.json'
-temp_file2 = 'content/temp-repos.json'
-
-urllib.urlretrieve(the_url2, filename=temp_file2)
-
-repos = open('content/tendermint-and-cosmos.rst', 'a')
-
-repos.write("Repositories\n")
-repos.write("------------\n\n")
-
-repos.write("Tendermint\n")
-repos.write("~~~~~~~~~~\n\n")
-
-my_json2 = json.load(open(temp_file2))
-
-def checkLength( highest, unsure ):
-    if unsure > highest:
-        return unsure
-    else:
-        return highest
-
-nL = 0
-gL = 0
-dL = 0
-# first get lengths for formatting info
-for item in my_json2["tendermint"]:
-        # get lengths for formatting
-        name_length = len(item["name"]) + 2
-        github_length = len(item["github"]) + 2
-        description_length = len(item["description"]) + 2
-
-        nL = checkLength(nL, name_length)
-        gL = checkLength(gL, github_length)
-        dL = checkLength(dL, description_length)
-
-n = "-" * nL
-g = "-" * gL
-d = "-" * dL
-
-top = "+%s+%s+%s+\n" % (n, g, d)
-
-repos.write(top)
-# then do another loop to write
-for item in my_json2["tendermint"]:
-        name_length = len(item["name"])
-        github_length = len(item["github"])
-        description_length = len(item["description"])
-
-        addN = nL - name_length - 2
-        addG = gL - github_length - 2
-        addD = dL - description_length - 2
-
-        spaceN = " " * addN
-        spaceG = " " * addG
-        spaceD = " " * addD
-
-        repos.write("| "+item["name"]+spaceN+" | "+item["github"]+spaceG+" | "+item["description"]+spaceD+" |\n")
-        repos.write(top)
-
-repos.write("\n")
-
-repos.write("Cosmos\n")
-repos.write("~~~~~~\n\n")
-# do it all over for cosmos repos
-# (yeah, this could be deduplicated)
-
-nL = 0
-gL = 0
-dL = 0
-# first get lengths for formatting info
-for item in my_json2["cosmos"]:
-        # get lengths for formatting
-        name_length = len(item["name"]) + 2
-        github_length = len(item["github"]) + 2
-        description_length = len(item["description"]) + 2
-
-        nL = checkLength(nL, name_length)
-        gL = checkLength(gL, github_length)
-        dL = checkLength(dL, description_length)
-
-n = "-" * nL
-g = "-" * gL
-d = "-" * dL
-
-top = "+%s+%s+%s+\n" % (n, g, d)
-
-repos.write(top)
-# then do another loop to write
-for item in my_json2["cosmos"]:
-        name_length = len(item["name"])
-        github_length = len(item["github"])
-        description_length = len(item["description"])
-
-        addN = nL - name_length - 2
-        addG = gL - github_length - 2
-        addD = dL - description_length - 2
-
-        spaceN = " " * addN
-        spaceG = " " * addG
-        spaceD = " " * addD
-
-        repos.write("| "+item["name"]+spaceN+" | "+item["github"]+spaceG+" | "+item["description"]+spaceD+" |\n")
-        repos.write(top)
-
-repos.close()
-os.remove(temp_file2)
