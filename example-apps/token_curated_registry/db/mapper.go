@@ -1,10 +1,10 @@
 package db
 
 import (
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/go-amino"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/tendermint/go-amino"
 )
 
 type BallotMapper struct {
@@ -22,10 +22,10 @@ type BallotMapper struct {
 func NewBallotMapper(listingKey sdk.StoreKey, ballotkey sdk.StoreKey, commitKey sdk.StoreKey, revealKey sdk.StoreKey, _cdc *amino.Codec) BallotMapper {
 	return BallotMapper{
 		ListingKey: listingKey,
-		CommitKey: commitKey,
-		RevealKey: revealKey,
-		BallotKey: ballotkey,
-		Cdc: _cdc,
+		CommitKey:  commitKey,
+		RevealKey:  revealKey,
+		BallotKey:  ballotkey,
+		Cdc:        _cdc,
 	}
 }
 
@@ -49,9 +49,9 @@ func (bm BallotMapper) AddBallot(ctx sdk.Context, identifier string, owner sdk.A
 	store := ctx.KVStore(bm.BallotKey)
 
 	newBallot := types.Ballot{
-		Identifier: identifier,
-		Owner: owner,
-		Bond: bond,
+		Identifier:         identifier,
+		Owner:              owner,
+		Bond:               bond,
 		EndApplyBlockStamp: ctx.BlockHeight() + applyLen,
 	}
 	// Add ballot with Pending Status
@@ -68,7 +68,7 @@ func (bm BallotMapper) ActivateBallot(ctx sdk.Context, accountKeeper bank.Keeper
 	if ballot.Bond < minBond {
 		bm.DeleteBallot(ctx, identifier)
 		refund := sdk.Coin{
-			Denom: "RegistryCoin",
+			Denom:  "RegistryCoin",
 			Amount: challengeBond,
 		}
 		_, _, err := accountKeeper.AddCoins(ctx, challenger, []sdk.Coin{refund})
@@ -87,7 +87,7 @@ func (bm BallotMapper) ActivateBallot(ctx sdk.Context, accountKeeper bank.Keeper
 	ballot.EndRevealBlockStamp = ballot.EndCommitBlockStamp + revealLen
 
 	newBallot, _ := bm.Cdc.MarshalBinary(ballot)
-	key:= []byte(identifier)
+	key := []byte(identifier)
 	store.Set(key, newBallot)
 
 	return nil
@@ -129,7 +129,7 @@ func (bm BallotMapper) AddListing(ctx sdk.Context, identifier string, votes int6
 
 	listing := types.Listing{
 		Identifier: identifier,
-		Votes: votes,
+		Votes:      votes,
 	}
 	val, _ := bm.Cdc.MarshalBinary(listing)
 
@@ -149,7 +149,7 @@ func (bm BallotMapper) GetListing(ctx sdk.Context, identifier string) types.List
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return *listing
 }
 

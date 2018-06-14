@@ -1,13 +1,13 @@
 package db
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	dbm "github.com/tendermint/tmlibs/db"
-	"github.com/cosmos/cosmos-sdk/store"
-	"github.com/tendermint/go-amino"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
-	"github.com/tendermint/go-crypto"
+	"github.com/cosmos/cosmos-sdk/store"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/tendermint/go-amino"
+	"github.com/tendermint/go-crypto"
+	dbm "github.com/tendermint/tmlibs/db"
 )
 
 func SetupMultiStore() (sdk.MultiStore, *sdk.KVStoreKey, *sdk.KVStoreKey, *sdk.KVStoreKey, *sdk.KVStoreKey, *sdk.KVStoreKey) {

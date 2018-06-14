@@ -13,16 +13,16 @@ const (
 // ===================================================================================================================================
 
 type DeclareCandidacyMsg struct {
-	Owner sdk.Address
+	Owner      sdk.Address
 	Identifier string
-	Bond sdk.Coin
+	Bond       sdk.Coin
 }
 
-func NewDeclareCandidacyMsg(owner sdk.Address, identifier string, bond sdk.Coin) DeclareCandidacyMsg  {
+func NewDeclareCandidacyMsg(owner sdk.Address, identifier string, bond sdk.Coin) DeclareCandidacyMsg {
 	return DeclareCandidacyMsg{
-		Owner: owner,
+		Owner:      owner,
 		Identifier: identifier,
-		Bond: bond,
+		Bond:       bond,
 	}
 }
 
@@ -31,7 +31,7 @@ func (msg DeclareCandidacyMsg) Type() string {
 }
 
 func (msg DeclareCandidacyMsg) ValidateBasic() sdk.Error {
-	if (msg.Bond.Amount <= 0 || msg.Bond.Denom != TokenName) {
+	if msg.Bond.Amount <= 0 || msg.Bond.Denom != TokenName {
 		return sdk.NewError(2, 101, "Must submit a bond in RegistryCoins")
 	}
 	return nil
@@ -52,16 +52,16 @@ func (msg DeclareCandidacyMsg) GetSigners() []sdk.Address {
 // ===================================================================================================================================
 
 type ChallengeMsg struct {
-	Owner sdk.Address
+	Owner      sdk.Address
 	Identifier string
-	Bond sdk.Coin
+	Bond       sdk.Coin
 }
 
 func NewChallengeMsg(owner sdk.Address, identifier string, bond sdk.Coin) ChallengeMsg {
 	return ChallengeMsg{
-		Owner: owner,
+		Owner:      owner,
 		Identifier: identifier,
-		Bond: bond,
+		Bond:       bond,
 	}
 }
 
@@ -70,7 +70,7 @@ func (msg ChallengeMsg) Type() string {
 }
 
 func (msg ChallengeMsg) ValidateBasic() sdk.Error {
-	if (msg.Bond.Amount <= 0 || msg.Bond.Denom != TokenName) {
+	if msg.Bond.Amount <= 0 || msg.Bond.Denom != TokenName {
 		return sdk.NewError(2, 101, "Must submit a bond in RegistryCoins")
 	}
 	return nil
@@ -91,14 +91,14 @@ func (msg ChallengeMsg) GetSigners() []sdk.Address {
 // ===================================================================================================================================
 
 type CommitMsg struct {
-	Owner sdk.Address
+	Owner      sdk.Address
 	Identifier string
 	Commitment []byte
 }
 
 func NewCommitMsg(owner sdk.Address, identifier string, commitment []byte) CommitMsg {
 	return CommitMsg{
-		Owner: owner,
+		Owner:      owner,
 		Identifier: identifier,
 		Commitment: commitment,
 	}
@@ -127,20 +127,20 @@ func (msg CommitMsg) GetSigners() []sdk.Address {
 // ===================================================================================================================================
 
 type RevealMsg struct {
-	Owner sdk.Address
+	Owner      sdk.Address
 	Identifier string
-	Vote bool
-	Nonce []byte
-	Bond sdk.Coin
+	Vote       bool
+	Nonce      []byte
+	Bond       sdk.Coin
 }
 
 func NewRevealMsg(owner sdk.Address, identifier string, vote bool, nonce []byte, bond sdk.Coin) RevealMsg {
 	return RevealMsg{
-		Owner: owner,
+		Owner:      owner,
 		Identifier: identifier,
-		Vote: vote,
-		Nonce: nonce,
-		Bond: bond,
+		Vote:       vote,
+		Nonce:      nonce,
+		Bond:       bond,
 	}
 }
 
@@ -149,7 +149,7 @@ func (msg RevealMsg) Type() string {
 }
 
 func (msg RevealMsg) ValidateBasic() sdk.Error {
-	if (msg.Bond.Amount <= 0 || msg.Bond.Denom != TokenName) {
+	if msg.Bond.Amount <= 0 || msg.Bond.Denom != TokenName {
 		return sdk.NewError(2, 101, "Must submit a bond in RegistryCoins")
 	}
 	return nil
@@ -170,13 +170,13 @@ func (msg RevealMsg) GetSigners() []sdk.Address {
 // ===================================================================================================================================
 
 type ApplyMsg struct {
-	Owner sdk.Address
+	Owner      sdk.Address
 	Identifier string
 }
 
 func NewApplyMsg(owner sdk.Address, identifier string) ApplyMsg {
 	return ApplyMsg{
-		Owner: owner,
+		Owner:      owner,
 		Identifier: identifier,
 	}
 }
@@ -204,13 +204,13 @@ func (msg ApplyMsg) GetSigners() []sdk.Address {
 // ===================================================================================================================================
 
 type ClaimRewardMsg struct {
-	Owner sdk.Address
+	Owner      sdk.Address
 	Identifier string
 }
 
 func NewClaimRewardMsg(owner sdk.Address, identifier string) ClaimRewardMsg {
 	return ClaimRewardMsg{
-		Owner: owner,
+		Owner:      owner,
 		Identifier: identifier,
 	}
 }
@@ -234,7 +234,6 @@ func (msg ClaimRewardMsg) GetSignBytes() []byte {
 func (msg ClaimRewardMsg) GetSigners() []sdk.Address {
 	return []sdk.Address{msg.Owner}
 }
-
 
 func RegisterAmino(cdc *amino.Codec) {
 	cdc.RegisterConcrete(DeclareCandidacyMsg{}, "types/DeclareCandidacyMsg", nil)

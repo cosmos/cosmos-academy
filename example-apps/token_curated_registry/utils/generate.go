@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"github.com/tendermint/go-crypto"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/go-crypto"
 )
 
 func GenerateAddress() sdk.Address {

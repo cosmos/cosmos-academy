@@ -1,21 +1,21 @@
 package app
 
 import (
-	bam "github.com/cosmos/cosmos-sdk/baseapp"
-	cmn "github.com/tendermint/tmlibs/common"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/abci/types"
-	"github.com/tendermint/go-amino"
-	dbm "github.com/tendermint/tmlibs/db"
-	"github.com/tendermint/tmlibs/log"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
+	"encoding/json"
 	handle "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/auth"
 	dbl "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/db"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
-	"github.com/tendermint/go-crypto"
-	"encoding/json"
+	bam "github.com/cosmos/cosmos-sdk/baseapp"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/wire"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	abci "github.com/tendermint/abci/types"
+	"github.com/tendermint/go-amino"
+	"github.com/tendermint/go-crypto"
+	cmn "github.com/tendermint/tmlibs/common"
+	dbm "github.com/tendermint/tmlibs/db"
+	"github.com/tendermint/tmlibs/log"
 )
 
 const (
@@ -41,13 +41,13 @@ type RegistryApp struct {
 	quorum float64
 
 	// keys to access the substores
-	capKeyMain *sdk.KVStoreKey
-	capKeyAccount *sdk.KVStoreKey
+	capKeyMain     *sdk.KVStoreKey
+	capKeyAccount  *sdk.KVStoreKey
 	capKeyListings *sdk.KVStoreKey
-	capKeyCommits *sdk.KVStoreKey
-	capKeyReveals *sdk.KVStoreKey
-	capKeyBallots *sdk.KVStoreKey
-	capKeyFees *sdk.KVStoreKey
+	capKeyCommits  *sdk.KVStoreKey
+	capKeyReveals  *sdk.KVStoreKey
+	capKeyBallots  *sdk.KVStoreKey
+	capKeyFees     *sdk.KVStoreKey
 
 	ballotMapper dbl.BallotMapper
 
@@ -59,26 +59,26 @@ type RegistryApp struct {
 func NewRegistryApp(logger log.Logger, db dbm.DB, mindeposit int64, applystage int64, commitstage int64, revealstage int64, dispensationpct float64, _quorum float64) *RegistryApp {
 	cdc := MakeCodec()
 	var app = &RegistryApp{
-		BaseApp: bam.NewBaseApp(appName, cdc, logger, db),
-		cdc: cdc,
-		minDeposit: mindeposit,
-		applyStage: applystage,
-		commitStage: commitstage,
-		revealStage: revealstage,
+		BaseApp:         bam.NewBaseApp(appName, cdc, logger, db),
+		cdc:             cdc,
+		minDeposit:      mindeposit,
+		applyStage:      applystage,
+		commitStage:     commitstage,
+		revealStage:     revealstage,
 		dispensationPct: dispensationpct,
-		quorum: _quorum,
-		capKeyMain: sdk.NewKVStoreKey("main"),
-		capKeyAccount: sdk.NewKVStoreKey("acc"),
-		capKeyFees: sdk.NewKVStoreKey("fee"),
-		capKeyListings: sdk.NewKVStoreKey("listings"),
-		capKeyCommits: sdk.NewKVStoreKey("commits"),
-		capKeyReveals: sdk.NewKVStoreKey("reveals"),
-		capKeyBallots: sdk.NewKVStoreKey("ballots"),
+		quorum:          _quorum,
+		capKeyMain:      sdk.NewKVStoreKey("main"),
+		capKeyAccount:   sdk.NewKVStoreKey("acc"),
+		capKeyFees:      sdk.NewKVStoreKey("fee"),
+		capKeyListings:  sdk.NewKVStoreKey("listings"),
+		capKeyCommits:   sdk.NewKVStoreKey("commits"),
+		capKeyReveals:   sdk.NewKVStoreKey("reveals"),
+		capKeyBallots:   sdk.NewKVStoreKey("ballots"),
 	}
 
 	app.ballotMapper = dbl.NewBallotMapper(app.capKeyListings, app.capKeyBallots, app.capKeyCommits, app.capKeyReveals, app.cdc)
 	app.accountMapper = auth.NewAccountMapper(app.cdc, app.capKeyAccount, &auth.BaseAccount{})
-	app.accountKeeper =  bank.NewKeeper(app.accountMapper)
+	app.accountKeeper = bank.NewKeeper(app.accountMapper)
 
 	app.Router().
 		AddRoute("DeclareCandidacy", handle.NewCandidacyHandler(app.accountKeeper, app.ballotMapper, app.minDeposit, app.applyStage)).
@@ -97,7 +97,6 @@ func NewRegistryApp(logger log.Logger, db dbm.DB, mindeposit int64, applystage i
 	if err != nil {
 		cmn.Exit(err.Error())
 	}
-
 
 	return app
 }

@@ -1,17 +1,17 @@
 package types
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestValidMsg(t *testing.T) {
 	msg := GenerateCandidacyMsg()
 
 	err := msg.ValidateBasic()
-	
-	assert.Nil(t, err) 
+
+	assert.Nil(t, err)
 }
 
 func TestInvalidDenom(t *testing.T) {
@@ -36,4 +36,3 @@ func TestInvalidAmount(t *testing.T) {
 
 	assert.Equal(t, sdk.CodeType(101), err.Code(), err.Error())
 }
-

@@ -1,24 +1,24 @@
 package auth
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
-	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	"crypto/sha256"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/db"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/abci/types"
-	"github.com/tendermint/tmlibs/log"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
-	"crypto/sha256"
+	"github.com/stretchr/testify/assert"
+	abci "github.com/tendermint/abci/types"
+	"github.com/tendermint/tmlibs/log"
+	"testing"
 )
 
 func TestCandidacyHandler(t *testing.T) {
 	// setup
 	addr := utils.GenerateAddress()
 	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 	ms, listKey, ballotKey, commitKey, revealKey, accountKey := db.SetupMultiStore()
@@ -42,7 +42,7 @@ func TestCandidacyHandler(t *testing.T) {
 	// fund account
 	account := auth.NewBaseAccountWithAddress(addr)
 	account.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	accountMapper.SetAccount(ctx, &account)
@@ -51,12 +51,12 @@ func TestCandidacyHandler(t *testing.T) {
 
 	// Check account deducted by bond
 	expected := accountKeeper.HasCoins(ctx, addr, []sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 50,
 	}})
 
 	assert.Equal(t, expected, true, "Account balances not deducted correctly")
-	
+
 	assert.Equal(t, sdk.Result{}, res, "Handler did not pass")
 
 	// Check that adding candidate twice fails
@@ -71,12 +71,12 @@ func TestChallengeHandler(t *testing.T) {
 	challenger := utils.GenerateAddress()
 
 	challengeMsg := types.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
 	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 	ms, listKey, ballotKey, commitKey, revealKey, accountKey := db.SetupMultiStore()
@@ -95,7 +95,7 @@ func TestChallengeHandler(t *testing.T) {
 	// fund account
 	account := auth.NewBaseAccountWithAddress(addr)
 	account.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	accountMapper.SetAccount(ctx, &account)
@@ -111,7 +111,7 @@ func TestChallengeHandler(t *testing.T) {
 
 	challengerAcc := auth.NewBaseAccountWithAddress(challenger)
 	challengerAcc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	accountMapper.SetAccount(ctx, &challengerAcc)
@@ -138,12 +138,12 @@ func TestCommitHandler(t *testing.T) {
 	committer := utils.GenerateAddress()
 
 	challengeMsg := types.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
 	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 	ms, listKey, ballotKey, commitKey, revealKey, accountKey := db.SetupMultiStore()
@@ -164,7 +164,7 @@ func TestCommitHandler(t *testing.T) {
 	// fund account
 	account := auth.NewBaseAccountWithAddress(addr)
 	account.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	accountMapper.SetAccount(ctx, &account)
@@ -174,13 +174,13 @@ func TestCommitHandler(t *testing.T) {
 	// fund challenger
 	challengerAcc := auth.NewBaseAccountWithAddress(challenger)
 	challengerAcc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	accountMapper.SetAccount(ctx, &challengerAcc)
 
 	commitMsg := types.NewCommitMsg(committer, "Unique registry listing", []byte("My commitment"))
-	
+
 	// Check that you cannot commit before challenge
 	res := commitHandler(ctx, commitMsg)
 	assert.Equal(t, sdk.ABCICodeType(0x20070), res.Code, "Allowed commitment before commit phase")
@@ -192,7 +192,7 @@ func TestCommitHandler(t *testing.T) {
 	// Check commit store updated
 	store := ctx.KVStore(commitKey)
 	voter := types.Voter{
-		Owner: committer,
+		Owner:      committer,
 		Identifier: "Unique registry listing",
 	}
 	key, _ := cdc.MarshalBinary(voter)
@@ -203,7 +203,6 @@ func TestCommitHandler(t *testing.T) {
 
 }
 
-
 func TestRevealHandler(t *testing.T) {
 	// setup
 	addr := utils.GenerateAddress()
@@ -211,12 +210,12 @@ func TestRevealHandler(t *testing.T) {
 	voter := utils.GenerateAddress()
 
 	challengeMsg := types.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
 	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 	ms, listKey, ballotKey, commitKey, revealKey, accountKey := db.SetupMultiStore()
@@ -238,7 +237,7 @@ func TestRevealHandler(t *testing.T) {
 	// fund account
 	account := auth.NewBaseAccountWithAddress(addr)
 	account.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	accountMapper.SetAccount(ctx, &account)
@@ -248,14 +247,14 @@ func TestRevealHandler(t *testing.T) {
 	// fund challenger
 	challengerAcc := auth.NewBaseAccountWithAddress(challenger)
 	challengerAcc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	accountMapper.SetAccount(ctx, &challengerAcc)
 
 	voterAcc := auth.NewBaseAccountWithAddress(voter)
 	voterAcc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 400,
 	}})
 	accountMapper.SetAccount(ctx, &voterAcc)
@@ -274,11 +273,11 @@ func TestRevealHandler(t *testing.T) {
 
 	// Create reveal msg's
 	revealMsg := types.NewRevealMsg(voter, "Unique registry listing", true, []byte("My secret nonce"), sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 	fakeMsg := types.NewRevealMsg(voter, "Unique registry listing", false, []byte("I want to change my vote"), sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
@@ -321,12 +320,12 @@ func TestApplyHandler(t *testing.T) {
 	voter := utils.GenerateAddress()
 
 	challengeMsg := types.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
 	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 	ms, listKey, ballotKey, commitKey, revealKey, accountKey := db.SetupMultiStore()
@@ -349,7 +348,7 @@ func TestApplyHandler(t *testing.T) {
 	// fund account
 	account := auth.NewBaseAccountWithAddress(addr)
 	account.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	accountMapper.SetAccount(ctx, &account)
@@ -359,14 +358,14 @@ func TestApplyHandler(t *testing.T) {
 	// fund challenger
 	challengerAcc := auth.NewBaseAccountWithAddress(challenger)
 	challengerAcc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	accountMapper.SetAccount(ctx, &challengerAcc)
 
 	voterAcc := auth.NewBaseAccountWithAddress(voter)
 	voterAcc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 400,
 	}})
 	accountMapper.SetAccount(ctx, &voterAcc)
@@ -385,10 +384,10 @@ func TestApplyHandler(t *testing.T) {
 
 	// Create reveal msg's
 	revealMsg := types.NewRevealMsg(voter, "Unique registry listing", true, []byte("My secret nonce"), sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
-	
+
 	// Fast forward block height
 	ctx = ctx.WithBlockHeight(11)
 
@@ -396,7 +395,7 @@ func TestApplyHandler(t *testing.T) {
 
 	// Create Apply msg
 	applyMsg := types.NewApplyMsg(addr, "Unique registry listing")
-	
+
 	// Apply before end of reveal phase fails
 	res := applyHandler(ctx, applyMsg)
 	assert.Equal(t, sdk.ABCICodeType(0x20078), res.Code, "Allowed ballot to be finalized before end of reveal phase")
@@ -408,7 +407,7 @@ func TestApplyHandler(t *testing.T) {
 
 	// check that applier got reward Bond(100) * dispPct(0.5) = 50. Note applier has 50 coins before apply
 	actual := accountKeeper.HasCoins(ctx, addr, []sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	}})
 
@@ -419,13 +418,12 @@ func TestApplyHandler(t *testing.T) {
 	listing := mapper.GetListing(ctx, "Unique registry listing")
 	expected := types.Listing{
 		Identifier: "Unique registry listing",
-		Votes: ballot.Approve,
+		Votes:      ballot.Approve,
 	}
 
 	assert.Equal(t, expected, listing, "Listing not added to registry correctly")
 
 	assert.Equal(t, sdk.Result{}, res, "Handler did not pass")
-
 
 	// Test apply works without challenge
 	addr = utils.GenerateAddress()
@@ -435,13 +433,13 @@ func TestApplyHandler(t *testing.T) {
 	// fund account
 	account = auth.NewBaseAccountWithAddress(addr)
 	account.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	accountMapper.SetAccount(ctx, &account)
 
 	msg = types.NewDeclareCandidacyMsg(addr, "Unique registry listing 2", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
@@ -456,7 +454,7 @@ func TestApplyHandler(t *testing.T) {
 	// Check that listing added to registry
 	expected = types.Listing{
 		Identifier: "Unique registry listing 2",
-		Votes: 0,
+		Votes:      0,
 	}
 	actualList := mapper.GetListing(ctx, "Unique registry listing 2")
 
@@ -464,7 +462,6 @@ func TestApplyHandler(t *testing.T) {
 
 	// Check handler passes
 	assert.Equal(t, sdk.Result{}, res, "applyHandler does not pass when unchallenged")
-
 
 	// Check that challenging and removing an already existing listing works
 	challenger = utils.GenerateAddress()
@@ -474,13 +471,13 @@ func TestApplyHandler(t *testing.T) {
 	// fund challenger
 	challengerAcc = auth.NewBaseAccountWithAddress(challenger)
 	challengerAcc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	accountMapper.SetAccount(ctx, &challengerAcc)
 
 	challengeMsg = types.NewChallengeMsg(challenger, "Unique registry listing 2", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
@@ -499,7 +496,7 @@ func TestApplyHandler(t *testing.T) {
 	ctx = ctx.WithBlockHeight(11)
 
 	revealMsg = types.NewRevealMsg(challenger, "Unique registry listing 2", false, []byte("My secret nonce"), sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 50,
 	})
 
@@ -516,7 +513,7 @@ func TestApplyHandler(t *testing.T) {
 
 	// challenger should receive his original bond(100) as well as dispPct(0.5) of applier bond(100). Total 150. Note current balance of challenger is 0.
 	actualBalance := accountKeeper.HasCoins(ctx, challenger, []sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 150,
 	}})
 	assert.Equal(t, true, actualBalance, "Challenger balance did not update correctly")
@@ -534,12 +531,12 @@ func TestClaimRewardHandler(t *testing.T) {
 	loser := utils.GenerateAddress()
 
 	challengeMsg := types.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 200,
 	})
 
 	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 200,
 	})
 	ms, listKey, ballotKey, commitKey, revealKey, accountKey := db.SetupMultiStore()
@@ -563,7 +560,7 @@ func TestClaimRewardHandler(t *testing.T) {
 	// fund account
 	account := auth.NewBaseAccountWithAddress(addr)
 	account.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 250,
 	}})
 	accountMapper.SetAccount(ctx, &account)
@@ -573,7 +570,7 @@ func TestClaimRewardHandler(t *testing.T) {
 	// fund challenger
 	challengerAcc := auth.NewBaseAccountWithAddress(challenger)
 	challengerAcc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 250,
 	}})
 	accountMapper.SetAccount(ctx, &challengerAcc)
@@ -581,7 +578,7 @@ func TestClaimRewardHandler(t *testing.T) {
 	// fund victor1
 	victorAcc1 := auth.NewBaseAccountWithAddress(victor1)
 	victorAcc1.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	}})
 	accountMapper.SetAccount(ctx, &victorAcc1)
@@ -589,7 +586,7 @@ func TestClaimRewardHandler(t *testing.T) {
 	// fund victor2
 	victorAcc2 := auth.NewBaseAccountWithAddress(victor2)
 	victorAcc2.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 300,
 	}})
 	accountMapper.SetAccount(ctx, &victorAcc2)
@@ -597,7 +594,7 @@ func TestClaimRewardHandler(t *testing.T) {
 	// fund loser
 	loserAcc := auth.NewBaseAccountWithAddress(loser)
 	loserAcc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	}})
 	accountMapper.SetAccount(ctx, &loserAcc)
@@ -632,19 +629,18 @@ func TestClaimRewardHandler(t *testing.T) {
 
 	// Create reveal msg's
 	victorRevealMsg1 := types.NewRevealMsg(victor1, "Unique registry listing", true, []byte("Victor1 secret nonce"), sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 	victorRevealMsg2 := types.NewRevealMsg(victor2, "Unique registry listing", true, []byte("Victor2 secret nonce"), sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 300,
 	})
 	loserRevealMsg := types.NewRevealMsg(loser, "Unique registry listing", false, []byte("Loser secret nonce"), sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
-	
 	// Fast forward to reveal phase
 	ctx = ctx.WithBlockHeight(11)
 
@@ -675,21 +671,21 @@ func TestClaimRewardHandler(t *testing.T) {
 	// Check that victor was awarded his initial bond as well as (1 - dispPct) = 0.5, multiplied by ballot's bond mutliplied by victor's ratio of total correct votes
 	// 100 + 0.5 * 200 * 100 / 400 = 125
 	actual := accountKeeper.HasCoins(ctx, victor1, []sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 125,
 	}})
 	assert.Equal(t, true, actual, "Victor1 not refunded properly")
 
 	// 300 + 0.5 * 200 * 300 / 400 = 375
 	actual = accountKeeper.HasCoins(ctx, victor2, []sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 375,
 	}})
 	assert.Equal(t, true, actual, "Victor2 not refunded properly")
 
 	// Loser should get back their original bond, since reward for victors comes from challenger bond
 	actual = accountKeeper.HasCoins(ctx, loser, []sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	}})
 	assert.Equal(t, true, actual, "Loser not refunded properly")

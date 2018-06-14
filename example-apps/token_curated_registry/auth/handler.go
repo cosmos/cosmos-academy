@@ -1,13 +1,13 @@
 package auth
 
 import (
-	"github.com/tendermint/go-amino"
+	"crypto/sha256"
+	db "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/db"
+	types "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bank "github.com/cosmos/cosmos-sdk/x/bank"
-	types "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
-	db "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/db"
+	"github.com/tendermint/go-amino"
 	"reflect"
-	"crypto/sha256"
 )
 
 func NewCandidacyHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper, minBond int64, applyLen int64) sdk.Handler {
@@ -56,7 +56,7 @@ func NewChallengeHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper
 			panic(err2)
 		}
 
-		if ballot.EndCommitBlockStamp != 0  {
+		if ballot.EndCommitBlockStamp != 0 {
 			return sdk.NewError(2, 111, "Candidate has already been challenged").Result()
 		}
 
@@ -79,7 +79,7 @@ func NewCommitHandler(cdc *amino.Codec, ballotKey, commitKey sdk.StoreKey) sdk.H
 		store := ctx.KVStore(ballotKey)
 		key := []byte(commitMsg.Identifier)
 		bz := store.Get(key)
-		
+
 		if bz == nil {
 			return sdk.NewError(2, 108, "Candidate with given identifier does not exist").Result()
 		}
@@ -96,7 +96,7 @@ func NewCommitHandler(cdc *amino.Codec, ballotKey, commitKey sdk.StoreKey) sdk.H
 		commitStore := ctx.KVStore(commitKey)
 
 		voter := types.Voter{
-			Owner: commitMsg.Owner,
+			Owner:      commitMsg.Owner,
 			Identifier: commitMsg.Identifier,
 		}
 		voterKey, _ := cdc.MarshalBinary(voter)
@@ -116,7 +116,7 @@ func NewRevealHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper) s
 		store := ctx.KVStore(ballotMapper.BallotKey)
 		key := []byte(revealMsg.Identifier)
 		bz := store.Get(key)
-		
+
 		if bz == nil {
 			return sdk.NewError(2, 108, "Candidate with given identifier does not exist").Result()
 		}
@@ -132,9 +132,9 @@ func NewRevealHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper) s
 
 		commitStore := ctx.KVStore(ballotMapper.CommitKey)
 		revealStore := ctx.KVStore(ballotMapper.RevealKey)
-		
+
 		voter := types.Voter{
-			Owner: revealMsg.Owner,
+			Owner:      revealMsg.Owner,
 			Identifier: revealMsg.Identifier,
 		}
 		voterKey, _ := ballotMapper.Cdc.MarshalBinary(voter)
@@ -143,22 +143,22 @@ func NewRevealHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper) s
 		}
 
 		commitment := commitStore.Get(voterKey)
-		
+
 		hasher := sha256.New()
 		vz, _ := ballotMapper.Cdc.MarshalBinary(revealMsg.Vote)
 		hasher.Sum(vz)
 		val := hasher.Sum(revealMsg.Nonce)
 
-		if (!reflect.DeepEqual(val, commitment)) {
+		if !reflect.DeepEqual(val, commitment) {
 			return sdk.NewError(2, 106, "Vote does not match commitment").Result()
 		}
 
 		reveal := types.Vote{
 			Choice: revealMsg.Vote,
-			Power: revealMsg.Bond.Amount,
+			Power:  revealMsg.Bond.Amount,
 		}
 		revealVal, _ := ballotMapper.Cdc.MarshalBinary(reveal)
-	
+
 		commitStore.Delete(voterKey)
 		revealStore.Set(voterKey, revealVal)
 
@@ -195,7 +195,7 @@ func NewApplyHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper, li
 			} else {
 				listing := types.Listing{
 					Identifier: ballot.Identifier,
-					Votes: 0,
+					Votes:      0,
 				}
 				val, _ := ballotMapper.Cdc.MarshalBinary(listing)
 				registry.Set(key, val)
@@ -205,16 +205,16 @@ func NewApplyHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper, li
 
 		total := ballot.Approve + ballot.Deny
 
-		if float64(ballot.Approve) / float64(total) > quorum {
+		if float64(ballot.Approve)/float64(total) > quorum {
 			listing := types.Listing{
 				Identifier: ballot.Identifier,
-				Votes: ballot.Approve,
+				Votes:      ballot.Approve,
 			}
 			entry, _ := ballotMapper.Cdc.MarshalBinary(listing)
 			registry.Set(key, entry)
 
 			reward := sdk.Coin{
-				Denom: "RegistryCoin",
+				Denom:  "RegistryCoin",
 				Amount: int64(float64(ballot.Bond) * dispPct),
 			}
 			_, _, err := accountKeeper.AddCoins(ctx, ballot.Owner, []sdk.Coin{reward})
@@ -228,8 +228,8 @@ func NewApplyHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper, li
 
 			// Challenger receives his original bond as well as dispPct of applier bond
 			reward := sdk.Coin{
-				Denom: "RegistryCoin",
-				Amount: int64(float64(ballot.Bond) * dispPct) + ballot.Bond,
+				Denom:  "RegistryCoin",
+				Amount: int64(float64(ballot.Bond)*dispPct) + ballot.Bond,
 			}
 			_, _, err := accountKeeper.AddCoins(ctx, ballot.Challenger, []sdk.Coin{reward})
 
@@ -252,7 +252,7 @@ func NewClaimRewardHandler(cdc *amino.Codec, accountKeeper bank.Keeper, ballotKe
 		revealStore := ctx.KVStore(revealKey)
 
 		voter := types.Voter{
-			Owner: claimMsg.Owner,
+			Owner:      claimMsg.Owner,
 			Identifier: claimMsg.Identifier,
 		}
 		key, _ := cdc.MarshalBinary(voter)
@@ -263,7 +263,7 @@ func NewClaimRewardHandler(cdc *amino.Codec, accountKeeper bank.Keeper, ballotKe
 		if err != nil {
 			panic(err)
 		}
-		
+
 		registry := ctx.KVStore(listingKey)
 		val := registry.Get([]byte(claimMsg.Identifier))
 
@@ -275,7 +275,7 @@ func NewClaimRewardHandler(cdc *amino.Codec, accountKeeper bank.Keeper, ballotKe
 		err = cdc.UnmarshalBinary(lz, ballot)
 		if err != nil {
 			panic(err)
-		} 
+		}
 
 		if ballot.Active {
 			return sdk.NewError(2, 130, "Cannot claim reward until after ballot vote is applied").Result()
@@ -283,14 +283,14 @@ func NewClaimRewardHandler(cdc *amino.Codec, accountKeeper bank.Keeper, ballotKe
 
 		var decision bool
 		if val == nil {
-			decision = false 
+			decision = false
 		} else {
 			decision = true
 		}
 
 		if vote.Choice != decision {
 			refund := sdk.Coin{
-				Denom: "RegistryCoin",
+				Denom:  "RegistryCoin",
 				Amount: vote.Power,
 			}
 			accountKeeper.AddCoins(ctx, claimMsg.Owner, []sdk.Coin{refund})
@@ -306,8 +306,8 @@ func NewClaimRewardHandler(cdc *amino.Codec, accountKeeper bank.Keeper, ballotKe
 		}
 
 		reward := sdk.Coin{
-			Denom: "RegistryCoin",
-			Amount: vote.Power + int64(float64(pool) * float64(vote.Power) / float64(total)),
+			Denom:  "RegistryCoin",
+			Amount: vote.Power + int64(float64(pool)*float64(vote.Power)/float64(total)),
 		}
 		_, _, accErr := accountKeeper.AddCoins(ctx, claimMsg.Owner, []sdk.Coin{reward})
 
@@ -318,4 +318,3 @@ func NewClaimRewardHandler(cdc *amino.Codec, accountKeeper bank.Keeper, ballotKe
 		return sdk.Result{}
 	}
 }
-

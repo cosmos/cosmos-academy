@@ -1,18 +1,18 @@
 package app
 
 import (
-	"testing"
-	"os"
-	"github.com/stretchr/testify/require"
-	"github.com/stretchr/testify/assert"
-	"github.com/tendermint/tmlibs/log"
-	dbm "github.com/tendermint/tmlibs/db"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
 	"github.com/cosmos/cosmos-sdk/wire"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/abci/types"
-	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
-	
+	dbm "github.com/tendermint/tmlibs/db"
+	"github.com/tendermint/tmlibs/log"
+	"os"
+	"testing"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -29,7 +29,7 @@ func setGenesis(rapp *RegistryApp, accs ...auth.BaseAccount) error {
 	}
 
 	genesisState := types.GenesisState{
-		Accounts:  genaccs,
+		Accounts: genaccs,
 	}
 
 	stateBytes, err := wire.MarshalJSONIndent(rapp.cdc, genesisState)
@@ -53,7 +53,7 @@ func TestBadMsg(t *testing.T) {
 	acc := auth.NewBaseAccountWithAddress(addr)
 
 	acc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 50,
 	}})
 
@@ -63,7 +63,7 @@ func TestBadMsg(t *testing.T) {
 	}
 
 	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 50,
 	})
 
@@ -95,7 +95,7 @@ func TestBadMsg(t *testing.T) {
 	rapp.BeginBlock(abci.RequestBeginBlock{})
 	dres := rapp.DeliverTx(txBytes)
 	assert.Equal(t, sdk.CodeType(5), sdk.CodeType(dres.Code), dres.Log)
-	
+
 }
 
 func TestBadTx(t *testing.T) {
@@ -106,7 +106,7 @@ func TestBadTx(t *testing.T) {
 	acc := auth.NewBaseAccountWithAddress(addr)
 
 	acc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	}})
 
@@ -116,7 +116,7 @@ func TestBadTx(t *testing.T) {
 	}
 
 	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
@@ -139,7 +139,7 @@ func TestBadTx(t *testing.T) {
 	rapp.BeginBlock(abci.RequestBeginBlock{})
 	dres := rapp.DeliverTx(txBytes)
 	assert.Equal(t, sdk.CodeType(4), sdk.CodeType(dres.Code), dres.Log)
-	
+
 }
 
 func TestApplyUnchallengedFlow(t *testing.T) {
@@ -150,7 +150,7 @@ func TestApplyUnchallengedFlow(t *testing.T) {
 	acc := auth.NewBaseAccountWithAddress(addr)
 
 	acc.SetCoins([]sdk.Coin{sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	}})
 
@@ -160,7 +160,7 @@ func TestApplyUnchallengedFlow(t *testing.T) {
 	}
 
 	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
-		Denom: "RegistryCoin",
+		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
@@ -177,7 +177,6 @@ func TestApplyUnchallengedFlow(t *testing.T) {
 
 	cdc := MakeCodec()
 
-	
 	txBytes, encodeErr := cdc.MarshalBinary(tx)
 
 	require.NoError(t, encodeErr)
@@ -191,7 +190,7 @@ func TestApplyUnchallengedFlow(t *testing.T) {
 	rapp.BeginBlock(abci.RequestBeginBlock{})
 	dres := rapp.Deliver(tx)
 	assert.Equal(t, sdk.CodeType(0), sdk.CodeType(dres.Code), dres.Log)
-	
+
 	rapp.EndBlock(abci.RequestEndBlock{})
 	rapp.Commit()
 
@@ -226,7 +225,7 @@ func TestApplyUnchallengedFlow(t *testing.T) {
 
 	listing := types.Listing{
 		Identifier: "Unique registry listing",
-		Votes: 0,
+		Votes:      0,
 	}
 	expected, _ := rapp.cdc.MarshalBinary(listing)
 	actual := store.Get([]byte("Unique registry listing"))

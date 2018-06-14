@@ -32,7 +32,7 @@ func NewAnteHandler(accountMapper auth.AccountMapper) sdk.AnteHandler {
 		if acc == nil {
 			return ctx, sdk.ErrUnknownAddress(signerAddr.String()).Result(), true
 		}
-	
+
 		// Check and increment sequence number.
 		seq := acc.GetSequence()
 		if seq != sig.Sequence {
@@ -40,7 +40,7 @@ func NewAnteHandler(accountMapper auth.AccountMapper) sdk.AnteHandler {
 				fmt.Sprintf("Invalid sequence. Got %d, expected %d", sig.Sequence, seq)).Result(), true
 		}
 		acc.SetSequence(seq + 1)
-	
+
 		// If pubkey is not known for account,
 		// set it from the StdSignature.
 		pubKey := acc.GetPubKey()

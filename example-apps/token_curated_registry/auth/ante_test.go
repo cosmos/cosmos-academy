@@ -1,14 +1,14 @@
 package auth
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/assert"
-	abci "github.com/tendermint/abci/types"
-	"github.com/tendermint/tmlibs/log"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/db"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/stretchr/testify/assert"
+	abci "github.com/tendermint/abci/types"
+	"github.com/tendermint/tmlibs/log"
 	"testing"
 )
 
@@ -45,7 +45,7 @@ func TestBadTx(t *testing.T) {
 		}},
 	}
 
-	_, _, abort  := ante(ctx, tx)
+	_, _, abort := ante(ctx, tx)
 
 	assert.Equal(t, true, abort, "Bad Tx allowed to pass")
 }
@@ -75,10 +75,9 @@ func TestGoodTx(t *testing.T) {
 		}},
 	}
 
-	_, res, abort  := ante(ctx, tx)
+	_, res, abort := ante(ctx, tx)
 
 	assert.Equal(t, sdk.Result{}, res, "Good tx failed")
 
 	assert.Equal(t, false, abort, "Good tx failed")
 }
-

@@ -82,7 +82,7 @@ func main() {
 
 func DeclareCandidacyCmd(cdc *wire.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "declare [listing_identifier] [bond]",
+		Use:   "declare [listing_identifier] [bond]",
 		Short: "Declare candidacy for a specific listing",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return nil
