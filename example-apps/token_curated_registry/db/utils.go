@@ -5,7 +5,7 @@ import (
 	dbm "github.com/tendermint/tmlibs/db"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/tendermint/go-amino"
-	"github.com/AdityaSripal/token_curated_registry/types"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	"github.com/tendermint/go-crypto"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 )

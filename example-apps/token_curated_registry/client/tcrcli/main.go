@@ -20,8 +20,8 @@ import (
 	ibccmd "github.com/cosmos/cosmos-sdk/x/ibc/client/cli"
 	stakecmd "github.com/cosmos/cosmos-sdk/x/stake/client/cli"
 
-	"github.com/AdityaSripal/token_curated_registry/app"
-	"github.com/AdityaSripal/token_curated_registry/types"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/app"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 )
 
 // rootCmd is the entry point for this binary

@@ -3,14 +3,14 @@ package auth
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"github.com/AdityaSripal/token_curated_registry/types"
-	"github.com/AdityaSripal/token_curated_registry/db"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/db"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/abci/types"
 	"github.com/tendermint/tmlibs/log"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/AdityaSripal/token_curated_registry/utils"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
 	"crypto/sha256"
 )
 

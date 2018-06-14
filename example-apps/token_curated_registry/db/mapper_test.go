@@ -10,8 +10,8 @@ import (
 	abci "github.com/tendermint/abci/types"
 
 	"github.com/tendermint/tmlibs/log"
-	"github.com/AdityaSripal/token_curated_registry/types"
-	"github.com/AdityaSripal/token_curated_registry/utils"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
 )
 
 func TestAddGet(t *testing.T) {

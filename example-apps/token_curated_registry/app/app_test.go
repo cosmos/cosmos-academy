@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tendermint/tmlibs/log"
 	dbm "github.com/tendermint/tmlibs/db"
-	"github.com/AdityaSripal/token_curated_registry/types"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	"github.com/cosmos/cosmos-sdk/wire"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	abci "github.com/tendermint/abci/types"
-	"github.com/AdityaSripal/token_curated_registry/utils"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
 	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

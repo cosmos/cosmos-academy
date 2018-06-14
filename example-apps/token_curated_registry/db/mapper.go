@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/go-amino"
-	"github.com/AdityaSripal/token_curated_registry/types"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 )
 
 type BallotMapper struct {

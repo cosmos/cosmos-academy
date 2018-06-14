@@ -5,9 +5,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	abci "github.com/tendermint/abci/types"
 	"github.com/tendermint/tmlibs/log"
-	"github.com/AdityaSripal/token_curated_registry/db"
-	"github.com/AdityaSripal/token_curated_registry/types"
-	"github.com/AdityaSripal/token_curated_registry/utils"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/db"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"testing"
 )

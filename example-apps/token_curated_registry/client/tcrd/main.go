@@ -11,7 +11,7 @@ import (
 	dbm "github.com/tendermint/tmlibs/db"
 	"github.com/tendermint/tmlibs/log"
 
-	"github.com/AdityaSripal/token_curated_registry/app"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/app"
 	"github.com/cosmos/cosmos-sdk/server"
 )
 

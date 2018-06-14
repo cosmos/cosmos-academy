@@ -4,8 +4,8 @@ import (
 	"github.com/tendermint/go-amino"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bank "github.com/cosmos/cosmos-sdk/x/bank"
-	types "github.com/AdityaSripal/token_curated_registry/types"
-	db "github.com/AdityaSripal/token_curated_registry/db"
+	types "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	db "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/db"
 	"reflect"
 	"crypto/sha256"
 )
