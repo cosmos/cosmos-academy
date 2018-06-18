@@ -3,7 +3,7 @@ package auth
 import (
 	"crypto/sha256"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/db"
-	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	tcr "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -17,7 +17,7 @@ import (
 func TestCandidacyHandler(t *testing.T) {
 	// setup
 	addr := utils.GenerateAddress()
-	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
+	msg := tcr.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
@@ -70,12 +70,12 @@ func TestChallengeHandler(t *testing.T) {
 	addr := utils.GenerateAddress()
 	challenger := utils.GenerateAddress()
 
-	challengeMsg := types.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
+	challengeMsg := tcr.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
-	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
+	msg := tcr.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
@@ -137,12 +137,12 @@ func TestCommitHandler(t *testing.T) {
 	challenger := utils.GenerateAddress()
 	committer := utils.GenerateAddress()
 
-	challengeMsg := types.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
+	challengeMsg := tcr.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
-	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
+	msg := tcr.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
@@ -179,11 +179,11 @@ func TestCommitHandler(t *testing.T) {
 	}})
 	accountMapper.SetAccount(ctx, &challengerAcc)
 
-	commitMsg := types.NewCommitMsg(committer, "Unique registry listing", []byte("My commitment"))
+	commitMsg := tcr.NewCommitMsg(committer, "Unique registry listing", []byte("My commitment"))
 
 	// Check that you cannot commit before challenge
 	res := commitHandler(ctx, commitMsg)
-	assert.Equal(t, sdk.ABCICodeType(0x20070), res.Code, "Allowed commitment before commit phase")
+	assert.Equal(t, sdk.ABCICodeType(0x20068), res.Code, "Allowed commitment before commit phase")
 
 	challengeHandler(ctx, challengeMsg)
 
@@ -191,7 +191,7 @@ func TestCommitHandler(t *testing.T) {
 
 	// Check commit store updated
 	store := ctx.KVStore(commitKey)
-	voter := types.Voter{
+	voter := tcr.Voter{
 		Owner:      committer,
 		Identifier: "Unique registry listing",
 	}
@@ -209,12 +209,12 @@ func TestRevealHandler(t *testing.T) {
 	challenger := utils.GenerateAddress()
 	voter := utils.GenerateAddress()
 
-	challengeMsg := types.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
+	challengeMsg := tcr.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
-	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
+	msg := tcr.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
@@ -268,29 +268,29 @@ func TestRevealHandler(t *testing.T) {
 	commitment := hasher.Sum([]byte("My secret nonce"))
 
 	// Make commitment
-	commitMsg := types.NewCommitMsg(voter, "Unique registry listing", commitment)
+	commitMsg := tcr.NewCommitMsg(voter, "Unique registry listing", commitment)
 	commitHandler(ctx, commitMsg)
 
 	// Create reveal msg's
-	revealMsg := types.NewRevealMsg(voter, "Unique registry listing", true, []byte("My secret nonce"), sdk.Coin{
+	revealMsg := tcr.NewRevealMsg(voter, "Unique registry listing", true, []byte("My secret nonce"), sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
-	fakeMsg := types.NewRevealMsg(voter, "Unique registry listing", false, []byte("I want to change my vote"), sdk.Coin{
+	fakeMsg := tcr.NewRevealMsg(voter, "Unique registry listing", false, []byte("I want to change my vote"), sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
 	// Revealing before reveal phase fails
 	res := revealHandler(ctx, revealMsg)
-	assert.Equal(t, sdk.ABCICodeType(0x20070), res.Code, "Allowed reveal msg to pass before reveal phase")
+	assert.Equal(t, sdk.ABCICodeType(0x20068), res.Code, "Allowed reveal msg to pass before reveal phase")
 
 	// Fast forward block height
 	ctx = ctx.WithBlockHeight(11)
 
 	// Revealing incorrect commitment fails
 	res = revealHandler(ctx, fakeMsg)
-	assert.Equal(t, sdk.ABCICodeType(0x2006a), res.Code, "Allowed invalid reveal to pass")
+	assert.Equal(t, sdk.ABCICodeType(0x20069), res.Code, "Allowed invalid reveal to pass")
 
 	// Check ballot votes have not changed after invalid reveals
 	ballot := mapper.GetBallot(ctx, "Unique registry listing")
@@ -310,7 +310,7 @@ func TestRevealHandler(t *testing.T) {
 	ballot = mapper.GetBallot(ctx, "Unique registry listing")
 
 	assert.Equal(t, int64(100), ballot.Approve, "Allowed user to vote twice")
-	assert.Equal(t, sdk.ABCICodeType(0x20080), res.Code, "Handler did not fail as expected when voting twice")
+	assert.Equal(t, sdk.ABCICodeType(0x20069), res.Code, "Handler did not fail as expected when voting twice")
 }
 
 func TestApplyHandler(t *testing.T) {
@@ -319,12 +319,12 @@ func TestApplyHandler(t *testing.T) {
 	challenger := utils.GenerateAddress()
 	voter := utils.GenerateAddress()
 
-	challengeMsg := types.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
+	challengeMsg := tcr.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
-	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
+	msg := tcr.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
@@ -379,11 +379,11 @@ func TestApplyHandler(t *testing.T) {
 	commitment := hasher.Sum([]byte("My secret nonce"))
 
 	// Make commitment
-	commitMsg := types.NewCommitMsg(voter, "Unique registry listing", commitment)
+	commitMsg := tcr.NewCommitMsg(voter, "Unique registry listing", commitment)
 	commitHandler(ctx, commitMsg)
 
 	// Create reveal msg's
-	revealMsg := types.NewRevealMsg(voter, "Unique registry listing", true, []byte("My secret nonce"), sdk.Coin{
+	revealMsg := tcr.NewRevealMsg(voter, "Unique registry listing", true, []byte("My secret nonce"), sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
@@ -394,11 +394,11 @@ func TestApplyHandler(t *testing.T) {
 	revealHandler(ctx, revealMsg)
 
 	// Create Apply msg
-	applyMsg := types.NewApplyMsg(addr, "Unique registry listing")
+	applyMsg := tcr.NewApplyMsg(addr, "Unique registry listing")
 
 	// Apply before end of reveal phase fails
 	res := applyHandler(ctx, applyMsg)
-	assert.Equal(t, sdk.ABCICodeType(0x20078), res.Code, "Allowed ballot to be finalized before end of reveal phase")
+	assert.Equal(t, sdk.ABCICodeType(0x20068), res.Code, "Allowed ballot to be finalized before end of reveal phase")
 
 	// Fast forward block height past reveal phase
 	ctx = ctx.WithBlockHeight(21)
@@ -416,7 +416,7 @@ func TestApplyHandler(t *testing.T) {
 	// check candidate was added to  listing
 	ballot := mapper.GetBallot(ctx, "Unique registry listing")
 	listing := mapper.GetListing(ctx, "Unique registry listing")
-	expected := types.Listing{
+	expected := tcr.Listing{
 		Identifier: "Unique registry listing",
 		Votes:      ballot.Approve,
 	}
@@ -438,7 +438,7 @@ func TestApplyHandler(t *testing.T) {
 	}})
 	accountMapper.SetAccount(ctx, &account)
 
-	msg = types.NewDeclareCandidacyMsg(addr, "Unique registry listing 2", sdk.Coin{
+	msg = tcr.NewDeclareCandidacyMsg(addr, "Unique registry listing 2", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
@@ -448,11 +448,11 @@ func TestApplyHandler(t *testing.T) {
 	// Fast forward past application stage
 	ctx = ctx.WithBlockHeight(11)
 
-	applyMsg = types.NewApplyMsg(addr, "Unique registry listing 2")
+	applyMsg = tcr.NewApplyMsg(addr, "Unique registry listing 2")
 	res = applyHandler(ctx, applyMsg)
 
 	// Check that listing added to registry
-	expected = types.Listing{
+	expected = tcr.Listing{
 		Identifier: "Unique registry listing 2",
 		Votes:      0,
 	}
@@ -476,7 +476,7 @@ func TestApplyHandler(t *testing.T) {
 	}})
 	accountMapper.SetAccount(ctx, &challengerAcc)
 
-	challengeMsg = types.NewChallengeMsg(challenger, "Unique registry listing 2", sdk.Coin{
+	challengeMsg = tcr.NewChallengeMsg(challenger, "Unique registry listing 2", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
@@ -489,13 +489,13 @@ func TestApplyHandler(t *testing.T) {
 	hasher.Sum(vote)
 	commitment = hasher.Sum([]byte("My secret nonce"))
 
-	commitMsg = types.NewCommitMsg(challenger, "Unique registry listing 2", commitment)
+	commitMsg = tcr.NewCommitMsg(challenger, "Unique registry listing 2", commitment)
 	commitHandler(ctx, commitMsg)
 
 	// Fast forward to reveal stage
 	ctx = ctx.WithBlockHeight(11)
 
-	revealMsg = types.NewRevealMsg(challenger, "Unique registry listing 2", false, []byte("My secret nonce"), sdk.Coin{
+	revealMsg = tcr.NewRevealMsg(challenger, "Unique registry listing 2", false, []byte("My secret nonce"), sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 50,
 	})
@@ -505,7 +505,7 @@ func TestApplyHandler(t *testing.T) {
 
 	res = applyHandler(ctx, applyMsg)
 
-	expected = types.Listing{}
+	expected = tcr.Listing{}
 	actualList = mapper.GetListing(ctx, "Unique registry listing 2")
 
 	// Check that listing is deleted
@@ -530,12 +530,12 @@ func TestClaimRewardHandler(t *testing.T) {
 	victor2 := utils.GenerateAddress()
 	loser := utils.GenerateAddress()
 
-	challengeMsg := types.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
+	challengeMsg := tcr.NewChallengeMsg(challenger, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 200,
 	})
 
-	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
+	msg := tcr.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 200,
 	})
@@ -618,25 +618,25 @@ func TestClaimRewardHandler(t *testing.T) {
 	loserCommitment := hasher.Sum([]byte("Loser secret nonce"))
 
 	// Make commitments
-	victorCommitMsg1 := types.NewCommitMsg(victor1, "Unique registry listing", victorCommitment1)
+	victorCommitMsg1 := tcr.NewCommitMsg(victor1, "Unique registry listing", victorCommitment1)
 	commitHandler(ctx, victorCommitMsg1)
 
-	victorCommitMsg2 := types.NewCommitMsg(victor2, "Unique registry listing", victorCommitment2)
+	victorCommitMsg2 := tcr.NewCommitMsg(victor2, "Unique registry listing", victorCommitment2)
 	commitHandler(ctx, victorCommitMsg2)
 
-	loserCommitMsg := types.NewCommitMsg(loser, "Unique registry listing", loserCommitment)
+	loserCommitMsg := tcr.NewCommitMsg(loser, "Unique registry listing", loserCommitment)
 	commitHandler(ctx, loserCommitMsg)
 
 	// Create reveal msg's
-	victorRevealMsg1 := types.NewRevealMsg(victor1, "Unique registry listing", true, []byte("Victor1 secret nonce"), sdk.Coin{
+	victorRevealMsg1 := tcr.NewRevealMsg(victor1, "Unique registry listing", true, []byte("Victor1 secret nonce"), sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
-	victorRevealMsg2 := types.NewRevealMsg(victor2, "Unique registry listing", true, []byte("Victor2 secret nonce"), sdk.Coin{
+	victorRevealMsg2 := tcr.NewRevealMsg(victor2, "Unique registry listing", true, []byte("Victor2 secret nonce"), sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 300,
 	})
-	loserRevealMsg := types.NewRevealMsg(loser, "Unique registry listing", false, []byte("Loser secret nonce"), sdk.Coin{
+	loserRevealMsg := tcr.NewRevealMsg(loser, "Unique registry listing", false, []byte("Loser secret nonce"), sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
@@ -652,16 +652,16 @@ func TestClaimRewardHandler(t *testing.T) {
 	ctx = ctx.WithBlockHeight(21)
 
 	// Create Claim reward Msg
-	claimVictorMsg1 := types.NewClaimRewardMsg(victor1, "Unique registry listing")
-	claimVictorMsg2 := types.NewClaimRewardMsg(victor2, "Unique registry listing")
-	claimLoserMsg := types.NewClaimRewardMsg(loser, "Unique registry listing")
+	claimVictorMsg1 := tcr.NewClaimRewardMsg(victor1, "Unique registry listing")
+	claimVictorMsg2 := tcr.NewClaimRewardMsg(victor2, "Unique registry listing")
+	claimLoserMsg := tcr.NewClaimRewardMsg(loser, "Unique registry listing")
 
 	// Make sure claimReward fails before being applied
 	res := claimRewardHandler(ctx, claimVictorMsg1)
-	assert.Equal(t, sdk.ABCICodeType(0x20082), res.Code, "Allowed claim reward to pass before apply")
+	assert.Equal(t, sdk.ABCICodeType(0x20068), res.Code, "Allowed claim reward to pass before apply")
 
 	// Create Apply msg and handle
-	applyMsg := types.NewApplyMsg(addr, "Unique registry listing")
+	applyMsg := tcr.NewApplyMsg(addr, "Unique registry listing")
 	applyHandler(ctx, applyMsg)
 
 	res1 := claimRewardHandler(ctx, claimVictorMsg1)

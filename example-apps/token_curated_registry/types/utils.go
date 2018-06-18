@@ -14,6 +14,6 @@ func GenerateCandidacyMsg() DeclareCandidacyMsg {
 	return DeclareCandidacyMsg{
 		Owner:      crypto.GenPrivKeyEd25519().PubKey().Address(),
 		Identifier: "Unique registry listing",
-		Bond:       coin,
+		Deposit:       coin,
 	}
 }

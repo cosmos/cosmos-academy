@@ -17,7 +17,7 @@ func TestValidMsg(t *testing.T) {
 func TestInvalidDenom(t *testing.T) {
 	msg := GenerateCandidacyMsg()
 
-	msg.Bond.Denom = "FakeCoin"
+	msg.Deposit.Denom = "FakeCoin"
 	err := msg.ValidateBasic()
 
 	assert.Equal(t, sdk.CodeType(101), err.Code(), err.Error())
@@ -26,12 +26,12 @@ func TestInvalidDenom(t *testing.T) {
 func TestInvalidAmount(t *testing.T) {
 	msg := GenerateCandidacyMsg()
 
-	msg.Bond.Amount = 0
+	msg.Deposit.Amount = 0
 	err := msg.ValidateBasic()
 
 	assert.Equal(t, sdk.CodeType(101), err.Code(), err.Error())
 
-	msg.Bond.Amount = -100
+	msg.Deposit.Amount = -100
 	err = msg.ValidateBasic()
 
 	assert.Equal(t, sdk.CodeType(101), err.Code(), err.Error())

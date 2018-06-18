@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	handle "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/auth"
 	dbl "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/db"
-	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	tcr "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/wire"
@@ -104,7 +104,7 @@ func NewRegistryApp(logger log.Logger, db dbm.DB, mindeposit int64, applystage i
 func (app *RegistryApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	stateJSON := req.AppStateBytes
 
-	genesisState := new(types.GenesisState)
+	genesisState := new(tcr.GenesisState)
 	err := app.cdc.UnmarshalJSON(stateJSON, genesisState)
 	if err != nil {
 		panic(err) // TODO https://github.com/cosmos/cosmos-sdk/issues/468
@@ -134,7 +134,7 @@ func (app *RegistryApp) txDecoder(txBytes []byte) (sdk.Tx, sdk.Error) {
 func MakeCodec() *amino.Codec {
 	cdc := amino.NewCodec()
 	cdc.RegisterInterface((*sdk.Msg)(nil), nil)
-	types.RegisterAmino(cdc)
+	tcr.RegisterAmino(cdc)
 	crypto.RegisterAmino(cdc)
 	cdc.RegisterInterface((*auth.Account)(nil), nil)
 	cdc.RegisterConcrete(&auth.BaseAccount{}, "cosmos-sdk/BaseAccount", nil)
@@ -146,9 +146,9 @@ func (app *RegistryApp) ExportAppStateJSON() (appState json.RawMessage, err erro
 	ctx := app.NewContext(true, abci.Header{})
 
 	// iterate to get the accounts
-	accounts := []*types.GenesisAccount{}
+	accounts := []*tcr.GenesisAccount{}
 	appendAccount := func(acc auth.Account) (stop bool) {
-		account := &types.GenesisAccount{
+		account := &tcr.GenesisAccount{
 			Address: acc.GetAddress(),
 			Coins:   acc.GetCoins(),
 		}
@@ -157,7 +157,7 @@ func (app *RegistryApp) ExportAppStateJSON() (appState json.RawMessage, err erro
 	}
 	app.accountMapper.IterateAccounts(ctx, appendAccount)
 
-	genState := types.GenesisState{
+	genState := tcr.GenesisState{
 		Accounts: accounts,
 	}
 	return wire.MarshalJSONIndent(app.cdc, genState)

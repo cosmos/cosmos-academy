@@ -12,17 +12,20 @@ const (
 
 // ===================================================================================================================================
 
+// DeclareCandidacyMsg is used to propose a new listing to be added to registry.
+// Identifier is a unique identifier of the listing
+// Deposit is taken and held for entire duration of listing. Awarded to challengers upon successful challenge.
 type DeclareCandidacyMsg struct {
 	Owner      sdk.Address
 	Identifier string
-	Bond       sdk.Coin
+	Deposit       sdk.Coin
 }
 
 func NewDeclareCandidacyMsg(owner sdk.Address, identifier string, bond sdk.Coin) DeclareCandidacyMsg {
 	return DeclareCandidacyMsg{
 		Owner:      owner,
 		Identifier: identifier,
-		Bond:       bond,
+		Deposit:       bond,
 	}
 }
 
@@ -31,8 +34,11 @@ func (msg DeclareCandidacyMsg) Type() string {
 }
 
 func (msg DeclareCandidacyMsg) ValidateBasic() sdk.Error {
-	if msg.Bond.Amount <= 0 || msg.Bond.Denom != TokenName {
-		return sdk.NewError(2, 101, "Must submit a bond in RegistryCoins")
+	if msg.Owner == nil {
+		return sdk.ErrInvalidAddress("Must provide Owner Address")
+	}
+	if !msg.Deposit.IsPositive() || msg.Deposit.Denom != TokenName {
+		return ErrInvalidDeposit(2, "Must provide Deposit in RegistryCoin")
 	}
 	return nil
 }
@@ -51,6 +57,7 @@ func (msg DeclareCandidacyMsg) GetSigners() []sdk.Address {
 
 // ===================================================================================================================================
 
+// ChallengeMsg is used to challenge a pending or finalized listing
 type ChallengeMsg struct {
 	Owner      sdk.Address
 	Identifier string
@@ -70,8 +77,11 @@ func (msg ChallengeMsg) Type() string {
 }
 
 func (msg ChallengeMsg) ValidateBasic() sdk.Error {
-	if msg.Bond.Amount <= 0 || msg.Bond.Denom != TokenName {
-		return sdk.NewError(2, 101, "Must submit a bond in RegistryCoins")
+	if msg.Owner == nil {
+		return sdk.ErrInvalidAddress("Must provide Owner Address")
+	}
+	if  !msg.Bond.IsPositive() || msg.Bond.Denom != TokenName {
+		return ErrInvalidDeposit(2, "Must provide deposit in RegistryCoin")
 	}
 	return nil
 }
@@ -90,6 +100,7 @@ func (msg ChallengeMsg) GetSigners() []sdk.Address {
 
 // ===================================================================================================================================
 
+// CommitMsg is used to make a commitment during commit phase on an active challenge to a specific listing identified by Identifier.
 type CommitMsg struct {
 	Owner      sdk.Address
 	Identifier string
@@ -109,6 +120,9 @@ func (msg CommitMsg) Type() string {
 }
 
 func (msg CommitMsg) ValidateBasic() sdk.Error {
+	if msg.Owner == nil {
+		return sdk.ErrInvalidAddress("Must provide owner address")
+	}
 	return nil
 }
 
@@ -126,6 +140,7 @@ func (msg CommitMsg) GetSigners() []sdk.Address {
 
 // ===================================================================================================================================
 
+// RevealMsg is to reveal vote during reveal phase on active challenge to listing identified by Identifier.
 type RevealMsg struct {
 	Owner      sdk.Address
 	Identifier string
@@ -149,8 +164,11 @@ func (msg RevealMsg) Type() string {
 }
 
 func (msg RevealMsg) ValidateBasic() sdk.Error {
+	if msg.Owner == nil {
+		return sdk.ErrInvalidAddress("Must provide Owner address")
+	}
 	if msg.Bond.Amount <= 0 || msg.Bond.Denom != TokenName {
-		return sdk.NewError(2, 101, "Must submit a bond in RegistryCoins")
+		return ErrInvalidDeposit(2, "Must provide Bond in RegistryCoin")
 	}
 	return nil
 }
@@ -169,6 +187,7 @@ func (msg RevealMsg) GetSigners() []sdk.Address {
 
 // ===================================================================================================================================
 
+// ApplyMsg is used to finalize results of completed challenge. May be called by anyone.
 type ApplyMsg struct {
 	Owner      sdk.Address
 	Identifier string
@@ -203,6 +222,7 @@ func (msg ApplyMsg) GetSigners() []sdk.Address {
 
 // ===================================================================================================================================
 
+// ClaimRewardMsg is used to claim the reward/refund after a challenge has been applied.
 type ClaimRewardMsg struct {
 	Owner      sdk.Address
 	Identifier string
@@ -220,6 +240,9 @@ func (msg ClaimRewardMsg) Type() string {
 }
 
 func (msg ClaimRewardMsg) ValidateBasic() sdk.Error {
+	if msg.Owner == nil {
+		return sdk.ErrInvalidAddress("Must provide Owner address")
+	}
 	return nil
 }
 

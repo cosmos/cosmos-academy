@@ -3,7 +3,7 @@ package auth
 import (
 	"crypto/sha256"
 	db "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/db"
-	types "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	tcr "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bank "github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/tendermint/go-amino"
@@ -12,22 +12,22 @@ import (
 
 func NewCandidacyHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper, minBond int64, applyLen int64) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
-		declareMsg := msg.(types.DeclareCandidacyMsg)
-		if declareMsg.Bond.Amount < minBond {
+		declareMsg := msg.(tcr.DeclareCandidacyMsg)
+		if declareMsg.Deposit.Amount < minBond {
 			return sdk.ErrInsufficientFunds("Must send at least the minimum bond").Result()
 		}
-		_, _, err := accountKeeper.SubtractCoins(ctx, declareMsg.Owner, []sdk.Coin{declareMsg.Bond})
+		_, _, err := accountKeeper.SubtractCoins(ctx, declareMsg.Owner, []sdk.Coin{declareMsg.Deposit})
 
 		if err != nil {
 			return err.Result()
 		}
 
 		ballot := ballotMapper.GetBallot(ctx, declareMsg.Identifier)
-		if !reflect.DeepEqual(ballot, types.Ballot{}) {
-			return sdk.NewError(2, 110, "Candidate already exists").Result()
+		if !reflect.DeepEqual(ballot, tcr.Ballot{}) {
+			return tcr.ErrInvalidBallot(2, "Candidate already exists").Result()
 		}
 
-		err2 := ballotMapper.AddBallot(ctx, declareMsg.Identifier, declareMsg.Owner, applyLen, declareMsg.Bond.Amount)
+		err2 := ballotMapper.AddBallot(ctx, declareMsg.Identifier, declareMsg.Owner, applyLen, declareMsg.Deposit.Amount)
 		if err2 != nil {
 			return err2.Result()
 		}
@@ -37,7 +37,7 @@ func NewCandidacyHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper
 
 func NewChallengeHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper, commitLen int64, revealLen int64, minBond int64) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
-		challengeMsg := msg.(types.ChallengeMsg)
+		challengeMsg := msg.(tcr.ChallengeMsg)
 		_, _, err := accountKeeper.SubtractCoins(ctx, challengeMsg.Owner, []sdk.Coin{challengeMsg.Bond})
 		if err != nil {
 			return err.Result()
@@ -48,20 +48,20 @@ func NewChallengeHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper
 		bz := store.Get(key)
 
 		if bz == nil {
-			return sdk.NewError(2, 108, "Candidate with given identifier does not exist").Result()
+			return tcr.ErrInvalidBallot(2,"Candidate with given identifier does not exist").Result()
 		}
-		ballot := &types.Ballot{}
+		ballot := &tcr.Ballot{}
 		err2 := ballotMapper.Cdc.UnmarshalBinary(bz, ballot)
 		if err2 != nil {
 			panic(err2)
 		}
 
 		if ballot.EndCommitBlockStamp != 0 {
-			return sdk.NewError(2, 111, "Candidate has already been challenged").Result()
+			return tcr.ErrInvalidPhase(2, "Candidate has already been challenged").Result()
 		}
 
 		if challengeMsg.Bond.Amount < ballot.Bond {
-			return sdk.NewError(2, 115, "Must match candidate bond to challenge").Result()
+			return tcr.ErrInvalidBond(2, "Must match candidate bond to challenge").Result()
 		}
 
 		err3 := ballotMapper.ActivateBallot(ctx, accountKeeper, ballot.Owner, challengeMsg.Owner, challengeMsg.Identifier, commitLen, revealLen, minBond, challengeMsg.Bond.Amount)
@@ -74,28 +74,28 @@ func NewChallengeHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper
 
 func NewCommitHandler(cdc *amino.Codec, ballotKey, commitKey sdk.StoreKey) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
-		commitMsg := msg.(types.CommitMsg)
+		commitMsg := msg.(tcr.CommitMsg)
 
 		store := ctx.KVStore(ballotKey)
 		key := []byte(commitMsg.Identifier)
 		bz := store.Get(key)
 
 		if bz == nil {
-			return sdk.NewError(2, 108, "Candidate with given identifier does not exist").Result()
+			return tcr.ErrInvalidBallot(2, "Candidate with given identifier does not exist").Result()
 		}
-		candidate := &types.Ballot{}
+		candidate := &tcr.Ballot{}
 		err2 := cdc.UnmarshalBinary(bz, candidate)
 		if err2 != nil {
 			panic(err2)
 		}
 
 		if candidate.EndCommitBlockStamp == 0 || candidate.EndCommitBlockStamp < ctx.BlockHeight() {
-			return sdk.NewError(2, 112, "Candidate not in commit phase").Result()
+			return tcr.ErrInvalidPhase(2, "Candidate not in commit phase").Result()
 		}
 
 		commitStore := ctx.KVStore(commitKey)
 
-		voter := types.Voter{
+		voter := tcr.Voter{
 			Owner:      commitMsg.Owner,
 			Identifier: commitMsg.Identifier,
 		}
@@ -107,7 +107,7 @@ func NewCommitHandler(cdc *amino.Codec, ballotKey, commitKey sdk.StoreKey) sdk.H
 
 func NewRevealHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
-		revealMsg := msg.(types.RevealMsg)
+		revealMsg := msg.(tcr.RevealMsg)
 		_, _, err := accountKeeper.SubtractCoins(ctx, revealMsg.Owner, []sdk.Coin{revealMsg.Bond})
 		if err != nil {
 			return err.Result()
@@ -118,28 +118,28 @@ func NewRevealHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper) s
 		bz := store.Get(key)
 
 		if bz == nil {
-			return sdk.NewError(2, 108, "Candidate with given identifier does not exist").Result()
+			return tcr.ErrInvalidBallot(2, "Candidate with given identifier does not exist").Result()
 		}
-		candidate := &types.Ballot{}
+		candidate := &tcr.Ballot{}
 		err2 := ballotMapper.Cdc.UnmarshalBinary(bz, candidate)
 		if err2 != nil {
 			panic(err2)
 		}
 
 		if candidate.EndCommitBlockStamp > ctx.BlockHeight() || candidate.EndRevealBlockStamp < ctx.BlockHeight() {
-			return sdk.NewError(2, 112, "Candidate not in reveal phase").Result()
+			return tcr.ErrInvalidPhase(2, "Candidate not in reveal phase").Result()
 		}
 
 		commitStore := ctx.KVStore(ballotMapper.CommitKey)
 		revealStore := ctx.KVStore(ballotMapper.RevealKey)
 
-		voter := types.Voter{
+		voter := tcr.Voter{
 			Owner:      revealMsg.Owner,
 			Identifier: revealMsg.Identifier,
 		}
 		voterKey, _ := ballotMapper.Cdc.MarshalBinary(voter)
 		if revealStore.Get(voterKey) != nil {
-			return sdk.NewError(2, 128, "Cannot vote more than once").Result()
+			return tcr.ErrInvalidVote(2, "Cannot vote more than once").Result()
 		}
 
 		commitment := commitStore.Get(voterKey)
@@ -150,10 +150,10 @@ func NewRevealHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper) s
 		val := hasher.Sum(revealMsg.Nonce)
 
 		if !reflect.DeepEqual(val, commitment) {
-			return sdk.NewError(2, 106, "Vote does not match commitment").Result()
+			return tcr.ErrInvalidVote(2, "Vote does not match commitment").Result()
 		}
 
-		reveal := types.Vote{
+		reveal := tcr.Vote{
 			Choice: revealMsg.Vote,
 			Power:  revealMsg.Bond.Amount,
 		}
@@ -172,12 +172,12 @@ func NewRevealHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper) s
 
 func NewApplyHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper, listingKey sdk.StoreKey, quorum float64, dispPct float64) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
-		applyMsg := msg.(types.ApplyMsg)
+		applyMsg := msg.(tcr.ApplyMsg)
 
 		store := ctx.KVStore(ballotMapper.BallotKey)
 		key := []byte(applyMsg.Identifier)
 		val := store.Get(key)
-		ballot := &types.Ballot{}
+		ballot := &tcr.Ballot{}
 		err := ballotMapper.Cdc.UnmarshalBinary(val, ballot)
 		if err != nil {
 			panic(err)
@@ -187,13 +187,13 @@ func NewApplyHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper, li
 
 		if ballot.Active {
 			if ctx.BlockHeight() < ballot.EndRevealBlockStamp {
-				return sdk.NewError(2, 120, "Cannot apply until reveal phase ends").Result()
+				return tcr.ErrInvalidPhase(2, "Cannot apply until reveal phase ends").Result()
 			}
 		} else {
 			if ctx.BlockHeight() < ballot.EndApplyBlockStamp {
-				return sdk.NewError(2, 120, "Cannot apply until application phase ends").Result()
+				return tcr.ErrInvalidPhase(2, "Cannot apply until application phase ends").Result()
 			} else {
-				listing := types.Listing{
+				listing := tcr.Listing{
 					Identifier: ballot.Identifier,
 					Votes:      0,
 				}
@@ -206,7 +206,7 @@ func NewApplyHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper, li
 		total := ballot.Approve + ballot.Deny
 
 		if float64(ballot.Approve)/float64(total) > quorum {
-			listing := types.Listing{
+			listing := tcr.Listing{
 				Identifier: ballot.Identifier,
 				Votes:      ballot.Approve,
 			}
@@ -248,17 +248,17 @@ func NewApplyHandler(accountKeeper bank.Keeper, ballotMapper db.BallotMapper, li
 
 func NewClaimRewardHandler(cdc *amino.Codec, accountKeeper bank.Keeper, ballotKey sdk.StoreKey, revealKey sdk.StoreKey, listingKey sdk.StoreKey, dispPct float64) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
-		claimMsg := msg.(types.ClaimRewardMsg)
+		claimMsg := msg.(tcr.ClaimRewardMsg)
 		revealStore := ctx.KVStore(revealKey)
 
-		voter := types.Voter{
+		voter := tcr.Voter{
 			Owner:      claimMsg.Owner,
 			Identifier: claimMsg.Identifier,
 		}
 		key, _ := cdc.MarshalBinary(voter)
 		bz := revealStore.Get(key)
 
-		vote := &types.Vote{}
+		vote := &tcr.Vote{}
 		err := cdc.UnmarshalBinary(bz, vote)
 		if err != nil {
 			panic(err)
@@ -269,7 +269,7 @@ func NewClaimRewardHandler(cdc *amino.Codec, accountKeeper bank.Keeper, ballotKe
 
 		ballotStore := ctx.KVStore(ballotKey)
 		listKey := []byte(claimMsg.Identifier)
-		ballot := &types.Ballot{}
+		ballot := &tcr.Ballot{}
 		lz := ballotStore.Get(listKey)
 
 		err = cdc.UnmarshalBinary(lz, ballot)
@@ -278,7 +278,7 @@ func NewClaimRewardHandler(cdc *amino.Codec, accountKeeper bank.Keeper, ballotKe
 		}
 
 		if ballot.Active {
-			return sdk.NewError(2, 130, "Cannot claim reward until after ballot vote is applied").Result()
+			return tcr.ErrInvalidPhase(2, "Cannot claim reward until after ballot vote is applied").Result()
 		}
 
 		var decision bool

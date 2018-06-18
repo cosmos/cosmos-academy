@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	tcr "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/tendermint/go-amino"
@@ -30,14 +30,14 @@ func NewBallotMapper(listingKey sdk.StoreKey, ballotkey sdk.StoreKey, commitKey 
 }
 
 // Will get Ballot using unique identifier. Do not need to specify status
-func (bm BallotMapper) GetBallot(ctx sdk.Context, identifier string) types.Ballot {
+func (bm BallotMapper) GetBallot(ctx sdk.Context, identifier string) tcr.Ballot {
 	store := ctx.KVStore(bm.BallotKey)
 	key := []byte(identifier)
 	val := store.Get(key)
 	if val == nil {
-		return types.Ballot{}
+		return tcr.Ballot{}
 	}
-	ballot := &types.Ballot{}
+	ballot := &tcr.Ballot{}
 	err := bm.Cdc.UnmarshalBinary(val, ballot)
 	if err != nil {
 		panic(err)
@@ -48,7 +48,7 @@ func (bm BallotMapper) GetBallot(ctx sdk.Context, identifier string) types.Ballo
 func (bm BallotMapper) AddBallot(ctx sdk.Context, identifier string, owner sdk.Address, applyLen int64, bond int64) sdk.Error {
 	store := ctx.KVStore(bm.BallotKey)
 
-	newBallot := types.Ballot{
+	newBallot := tcr.Ballot{
 		Identifier:         identifier,
 		Owner:              owner,
 		Bond:               bond,
@@ -78,7 +78,7 @@ func (bm BallotMapper) ActivateBallot(ctx sdk.Context, accountKeeper bank.Keeper
 		return nil
 	}
 	if ballot.Bond != challengeBond {
-		return sdk.NewError(2, 115, "Must match candidate's bond")
+		return tcr.ErrInvalidBallot(2, "Must match candidate's bond")
 	}
 
 	ballot.Active = true
@@ -101,7 +101,7 @@ func (bm BallotMapper) VoteBallot(ctx sdk.Context, owner sdk.Address, identifier
 	if bz == nil {
 		return sdk.NewError(2, 107, "Ballot does not exist")
 	}
-	ballot := &types.Ballot{}
+	ballot := &tcr.Ballot{}
 	err := bm.Cdc.UnmarshalBinary(bz, ballot)
 	if err != nil {
 		panic(err)
@@ -127,7 +127,7 @@ func (bm BallotMapper) AddListing(ctx sdk.Context, identifier string, votes int6
 	key := []byte(identifier)
 	store := ctx.KVStore(bm.ListingKey)
 
-	listing := types.Listing{
+	listing := tcr.Listing{
 		Identifier: identifier,
 		Votes:      votes,
 	}
@@ -136,15 +136,15 @@ func (bm BallotMapper) AddListing(ctx sdk.Context, identifier string, votes int6
 	store.Set(key, val)
 }
 
-func (bm BallotMapper) GetListing(ctx sdk.Context, identifier string) types.Listing {
+func (bm BallotMapper) GetListing(ctx sdk.Context, identifier string) tcr.Listing {
 	key := []byte(identifier)
 	store := ctx.KVStore(bm.ListingKey)
 
 	bz := store.Get(key)
 	if bz == nil {
-		return types.Listing{}
+		return tcr.Listing{}
 	}
-	listing := &types.Listing{}
+	listing := &tcr.Listing{}
 	err := bm.Cdc.UnmarshalBinary(bz, listing)
 	if err != nil {
 		panic(err)

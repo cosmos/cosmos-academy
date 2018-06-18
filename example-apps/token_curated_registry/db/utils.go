@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	tcr "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -30,7 +30,7 @@ func SetupMultiStore() (sdk.MultiStore, *sdk.KVStoreKey, *sdk.KVStoreKey, *sdk.K
 
 func MakeCodec() *amino.Codec {
 	cdc := amino.NewCodec()
-	types.RegisterAmino(cdc)
+	tcr.RegisterAmino(cdc)
 	crypto.RegisterAmino(cdc)
 	cdc.RegisterInterface((*auth.Account)(nil), nil)
 	cdc.RegisterConcrete(&auth.BaseAccount{}, "cosmos-sdk/BaseAccount", nil)
