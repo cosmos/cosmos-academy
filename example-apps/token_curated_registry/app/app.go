@@ -58,6 +58,8 @@ type RegistryApp struct {
 	accountKeeper bank.Keeper
 }
 
+// Initializes New Registry App
+// CONTRACT: applystage >= commitstage + revealstage
 func NewRegistryApp(logger log.Logger, db dbm.DB, mindeposit int64, applystage int64, commitstage int64, revealstage int64, dispensationpct float64, _quorum float64) *RegistryApp {
 	cdc := MakeCodec()
 	var app = &RegistryApp{

@@ -9,10 +9,11 @@ type Listing struct {
 	Votes      int64
 }
 
-// Create new Voter for address on each Listing
-type Voter struct {
-	Owner      sdk.Address
-	Identifier string
+func NewListing(identifier string, votes int64) Listing {
+	return Listing{
+		Identifier: identifier,
+		Votes: votes,
+	}
 }
 
 // Vote revealed during reveal phase
@@ -21,8 +22,16 @@ type Vote struct {
 	Power  int64
 }
 
+func NewVote(choice bool, power int64) Vote {
+	return Vote{
+		Choice: choice,
+		Power: power,
+	}
+}
+
 type Ballot struct {
 	Identifier          string
+	Details             string
 	Owner               sdk.Address
 	Challenger          sdk.Address
 	Active              bool
@@ -31,5 +40,15 @@ type Ballot struct {
 	Bond                int64
 	EndApplyBlockStamp  int64
 	EndCommitBlockStamp int64
-	EndRevealBlockStamp int64
 }
+
+func NewBallot(identifier string, details string, owner sdk.Address, endApplyBlock int64) Ballot {
+	return Ballot{
+		Identifier: identifier,
+		Details: details,
+		Owner: owner,
+		EndApplyBlockStamp: endApplyBlock,
+	}
+}
+
+

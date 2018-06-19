@@ -18,6 +18,7 @@ const (
 type DeclareCandidacyMsg struct {
 	Owner      sdk.Address
 	Identifier string
+	Details string
 	Deposit       sdk.Coin
 }
 
@@ -266,7 +267,6 @@ func RegisterAmino(cdc *amino.Codec) {
 	cdc.RegisterConcrete(ApplyMsg{}, "types/ApplyMsg", nil)
 	cdc.RegisterConcrete(ClaimRewardMsg{}, "types/ClaimRewardMsg", nil)
 	cdc.RegisterConcrete(Listing{}, "types/Listing", nil)
-	cdc.RegisterConcrete(Voter{}, "types/Voter", nil)
 	cdc.RegisterConcrete(Vote{}, "types/Vote", nil)
 	cdc.RegisterConcrete(Ballot{}, "types/Ballot", nil)
 }
