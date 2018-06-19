@@ -13,8 +13,6 @@ const (
 	CodeInvalidBallot       sdk.CodeType = 103
 	CodeInvalidPhase        sdk.CodeType = 104
 	CodeInvalidVote         sdk.CodeType = 105
-	CodeInvalidUTXO         sdk.CodeType = 106
-	CodeInvalidTransaction  sdk.CodeType = 107
 )
 
 func codeToDefaultMsg(code sdk.CodeType) string {

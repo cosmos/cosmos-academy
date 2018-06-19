@@ -99,7 +99,7 @@ func (bm BallotMapper) VoteBallot(ctx sdk.Context, owner sdk.Address, identifier
 	ballotKey := []byte(identifier)
 	bz := ballotStore.Get(ballotKey)
 	if bz == nil {
-		return sdk.NewError(2, 107, "Ballot does not exist")
+		return tcr.ErrInvalidBallot(2, "Ballot does not exist")
 	}
 	ballot := &tcr.Ballot{}
 	err := bm.Cdc.UnmarshalBinary(bz, ballot)

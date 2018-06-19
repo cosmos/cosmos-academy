@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	tcr "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
 	"github.com/cosmos/cosmos-sdk/wire"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -23,12 +23,12 @@ func newRegistryApp() *RegistryApp {
 }
 
 func setGenesis(rapp *RegistryApp, accs ...auth.BaseAccount) error {
-	genaccs := make([]*types.GenesisAccount, len(accs))
+	genaccs := make([]*tcr.GenesisAccount, len(accs))
 	for i, acc := range accs {
-		genaccs[i] = types.NewGenesisAccount(&acc)
+		genaccs[i] = tcr.NewGenesisAccount(&acc)
 	}
 
-	genesisState := types.GenesisState{
+	genesisState := tcr.GenesisState{
 		Accounts: genaccs,
 	}
 
@@ -62,14 +62,15 @@ func TestBadMsg(t *testing.T) {
 		panic(err)
 	}
 
-	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
+	msg := tcr.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 50,
 	})
 
-	sig := privKey.Sign(msg.GetSignBytes())
+	signBytes := auth.StdSignBytes(t.Name(), []int64{0}, auth.StdFee{}, msg)
+	sig := privKey.Sign(signBytes)
 
-	assert.Equal(t, true, privKey.PubKey().VerifyBytes(msg.GetSignBytes(), sig), "Sig doesn't work")
+	assert.Equal(t, true, privKey.PubKey().VerifyBytes(signBytes, sig), "Sig doesn't work")
 
 	tx := auth.StdTx{
 		Msg: msg,
@@ -86,13 +87,20 @@ func TestBadMsg(t *testing.T) {
 
 	require.NoError(t, encodeErr)
 
+	header := abci.Header{ChainID: t.Name()}
+
+	// Simulate a Block
+	rapp.BeginBlock(abci.RequestBeginBlock{Header: header})
+	// Must commit to setCheckState
+	rapp.EndBlock(abci.RequestEndBlock{})
+	rapp.Commit()
+	rapp.BeginBlock(abci.RequestBeginBlock{Header: header})
+
 	// Run a check
 	cres := rapp.CheckTx(txBytes)
 	assert.Equal(t, sdk.CodeType(5),
 		sdk.CodeType(cres.Code), cres.Log)
 
-	// Simulate a Block
-	rapp.BeginBlock(abci.RequestBeginBlock{})
 	dres := rapp.DeliverTx(txBytes)
 	assert.Equal(t, sdk.CodeType(5), sdk.CodeType(dres.Code), dres.Log)
 
@@ -115,7 +123,7 @@ func TestBadTx(t *testing.T) {
 		panic(err)
 	}
 
-	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
+	msg := tcr.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
@@ -136,7 +144,7 @@ func TestBadTx(t *testing.T) {
 		sdk.CodeType(cres.Code), cres.Log)
 
 	// Simulate a Block
-	rapp.BeginBlock(abci.RequestBeginBlock{})
+	rapp.BeginBlock(abci.RequestBeginBlock{Header: abci.Header{ChainID: t.Name()}})
 	dres := rapp.DeliverTx(txBytes)
 	assert.Equal(t, sdk.CodeType(4), sdk.CodeType(dres.Code), dres.Log)
 
@@ -159,15 +167,17 @@ func TestApplyUnchallengedFlow(t *testing.T) {
 		panic(err)
 	}
 
-	msg := types.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
+	msg := tcr.NewDeclareCandidacyMsg(addr, "Unique registry listing", sdk.Coin{
 		Denom:  "RegistryCoin",
 		Amount: 100,
 	})
 
-	sig := privKey.Sign(msg.GetSignBytes())
+	signBytes := auth.StdSignBytes(t.Name(), []int64{0}, auth.StdFee{Gas: 10000000}, msg)
+	sig := privKey.Sign(signBytes)
 
 	tx := auth.StdTx{
 		Msg: msg,
+		Fee: auth.StdFee{Gas: 10000000},
 		Signatures: []auth.StdSignature{auth.StdSignature{
 			privKey.PubKey(),
 			sig,
@@ -181,20 +191,25 @@ func TestApplyUnchallengedFlow(t *testing.T) {
 
 	require.NoError(t, encodeErr)
 
+	header := abci.Header{AppHash: []byte("apphash"), ChainID: t.Name()}
+	rapp.BeginBlock(abci.RequestBeginBlock{Header: header})
+	// Must commit a block to setCheckState
+	rapp.EndBlock(abci.RequestEndBlock{})
+	rapp.Commit()
+	rapp.BeginBlock(abci.RequestBeginBlock{Header: header})
+
 	// Run a check
 	cres := rapp.CheckTx(txBytes)
 	assert.Equal(t, sdk.CodeType(0),
 		sdk.CodeType(cres.Code), cres.Log)
 
 	// Simulate a Block
-	rapp.BeginBlock(abci.RequestBeginBlock{})
 	dres := rapp.Deliver(tx)
 	assert.Equal(t, sdk.CodeType(0), sdk.CodeType(dres.Code), dres.Log)
 
 	rapp.EndBlock(abci.RequestEndBlock{})
 	rapp.Commit()
 
-	header := abci.Header{AppHash: []byte("apphash")}
 
 	// Mine 10 empty blocks
 	for i := 0; i < 10; i++ {
@@ -204,14 +219,15 @@ func TestApplyUnchallengedFlow(t *testing.T) {
 		rapp.Commit()
 	}
 
-	applyMsg := types.NewApplyMsg(addr, "Unique registry listing")
+	applyMsg := tcr.NewApplyMsg(addr, "Unique registry listing")
 
-	sig = privKey.Sign(applyMsg.GetSignBytes())
+	signBytes = auth.StdSignBytes(t.Name(), []int64{1}, auth.StdFee{Gas: 10000000}, applyMsg)
+	sig = privKey.Sign(signBytes)
 
-	applyTx := auth.NewStdTx(applyMsg, auth.StdFee{}, []auth.StdSignature{auth.StdSignature{
+	applyTx := auth.NewStdTx(applyMsg, auth.StdFee{Gas: 10000000}, []auth.StdSignature{auth.StdSignature{
 		privKey.PubKey(),
 		sig,
-		0,
+		1,
 	}})
 
 	rapp.BeginBlock(abci.RequestBeginBlock{Header: header})
@@ -223,7 +239,7 @@ func TestApplyUnchallengedFlow(t *testing.T) {
 
 	store := ctx.KVStore(rapp.capKeyListings)
 
-	listing := types.Listing{
+	listing := tcr.Listing{
 		Identifier: "Unique registry listing",
 		Votes:      0,
 	}

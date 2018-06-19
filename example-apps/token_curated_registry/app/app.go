@@ -49,6 +49,8 @@ type RegistryApp struct {
 	capKeyBallots  *sdk.KVStoreKey
 	capKeyFees     *sdk.KVStoreKey
 
+	feeKeeper    auth.FeeCollectionKeeper
+
 	ballotMapper dbl.BallotMapper
 
 	// Manage addition and subtraction of account balances
@@ -76,6 +78,8 @@ func NewRegistryApp(logger log.Logger, db dbm.DB, mindeposit int64, applystage i
 		capKeyBallots:   sdk.NewKVStoreKey("ballots"),
 	}
 
+	app.feeKeeper = auth.NewFeeCollectionKeeper(cdc, app.capKeyFees)
+
 	app.ballotMapper = dbl.NewBallotMapper(app.capKeyListings, app.capKeyBallots, app.capKeyCommits, app.capKeyReveals, app.cdc)
 	app.accountMapper = auth.NewAccountMapper(app.cdc, app.capKeyAccount, &auth.BaseAccount{})
 	app.accountKeeper = bank.NewKeeper(app.accountMapper)
@@ -91,7 +95,7 @@ func NewRegistryApp(logger log.Logger, db dbm.DB, mindeposit int64, applystage i
 	app.SetTxDecoder(app.txDecoder)
 	app.SetInitChainer(app.initChainer)
 	app.MountStoresIAVL(app.capKeyMain, app.capKeyAccount, app.capKeyFees, app.capKeyListings, app.capKeyCommits, app.capKeyReveals, app.capKeyBallots)
-	app.SetAnteHandler(handle.NewAnteHandler(app.accountMapper))
+	app.SetAnteHandler(auth.NewAnteHandler(app.accountMapper, app.feeKeeper))
 
 	err := app.LoadLatestVersion(app.capKeyMain)
 	if err != nil {
