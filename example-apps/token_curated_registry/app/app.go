@@ -44,8 +44,6 @@ type RegistryApp struct {
 	capKeyMain     *sdk.KVStoreKey
 	capKeyAccount  *sdk.KVStoreKey
 	capKeyListings *sdk.KVStoreKey
-	capKeyCommits  *sdk.KVStoreKey
-	capKeyReveals  *sdk.KVStoreKey
 	capKeyBallots  *sdk.KVStoreKey
 	capKeyFees     *sdk.KVStoreKey
 
@@ -92,7 +90,7 @@ func NewRegistryApp(logger log.Logger, db dbm.DB, mindeposit int64, applystage i
 		
 	app.SetTxDecoder(app.txDecoder)
 	app.SetInitChainer(app.initChainer)
-	app.MountStoresIAVL(app.capKeyMain, app.capKeyAccount, app.capKeyFees, app.capKeyListings, app.capKeyCommits, app.capKeyReveals, app.capKeyBallots)
+	app.MountStoresIAVL(app.capKeyMain, app.capKeyAccount, app.capKeyFees, app.capKeyListings, app.capKeyBallots)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountMapper, app.feeKeeper))
 
 	err := app.LoadLatestVersion(app.capKeyMain)

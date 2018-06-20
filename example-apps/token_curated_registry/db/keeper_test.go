@@ -173,3 +173,7 @@ func TestAddDeleteList(t *testing.T) {
 
 	assert.Equal(t, tcr.Listing{}, delListing, "Listing not added correctly")
 }
+
+// ------------------------------------------------------------------------------------------------------------------
+// Test CandidateQueue
+

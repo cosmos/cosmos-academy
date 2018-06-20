@@ -5,6 +5,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/tendermint/go-amino"
+	"reflect"
+	"container/heap"
 )
 
 type BallotKeeper struct {
@@ -227,4 +229,82 @@ func (bk BallotKeeper) DeleteListing(ctx sdk.Context, identifier string) {
 	store := ctx.KVStore(bk.ListingKey)
 
 	store.Delete(key)
+}
+
+// --------------------------------------------------------------------------------------------------
+// Queue stored in key: candidateQueue
+
+// getCandidateQueue gets the CandidateQueue from the context
+func (bk BallotKeeper) getCandidateQueue(ctx sdk.Context) tcr.PriorityQueue {
+	store := ctx.KVStore(bk.BallotKey)
+	bpq := store.Get([]byte("candidateQueue"))
+	if bpq == nil {
+		return tcr.PriorityQueue{}
+	}
+
+	candidateQueue := tcr.PriorityQueue{}
+	err := bk.Cdc.UnmarshalBinaryBare(bpq, candidateQueue)
+	if err != nil {
+		panic(err)
+	}
+
+	return candidateQueue
+}
+
+// setProposalQueue sets the CandidateQueue to the context
+func (bk BallotKeeper) setProposalQueue(ctx sdk.Context, candidateQueue tcr.PriorityQueue) {
+	store := ctx.KVStore(bk.BallotKey)
+	bpq, err := bk.Cdc.MarshalBinaryBare(candidateQueue)
+	if err != nil {
+		panic(err)
+	}
+	store.Set([]byte("candidateQueue"), bpq)
+}
+
+// ProposalQueueHead returns the head of the PriorityQueue
+func (bk BallotKeeper) ProposalQueueHead(ctx sdk.Context) tcr.Ballot {
+	candidateQueue := bk.getCandidateQueue(ctx)
+	if reflect.DeepEqual(candidateQueue, tcr.PriorityQueue{}) {
+		return tcr.Ballot{}
+	}
+	if candidateQueue.Len() == 0 {
+		return tcr.Ballot{}
+	}
+	ballot := bk.GetBallot(ctx, candidateQueue.Peek().Value)
+	return ballot
+}
+
+// ProposalQueuePop pops the head from the Proposal queue
+func (bk BallotKeeper) ProposalQueuePop(ctx sdk.Context) tcr.Ballot {
+	candidateQueue := bk.getCandidateQueue(ctx)
+	if reflect.DeepEqual(candidateQueue, tcr.PriorityQueue{}) {
+		return tcr.Ballot{}
+	}
+	if candidateQueue.Len() == 0 {
+		return tcr.Ballot{}
+	}
+
+	ballot := bk.GetBallot(ctx, heap.Pop(&candidateQueue).(*tcr.Item).Value)
+	return ballot
+}
+
+// ProposalQueuePush pushes a candidate to Priority Queue
+func (bk BallotKeeper) ProposalQueuePush(ctx sdk.Context, identifier string, blockNum int64) {
+	candidateQueue := bk.getCandidateQueue(ctx)
+
+	item := tcr.Item{Value: identifier, Priority: int(blockNum)}
+	heap.Push(&candidateQueue, &item)
+	bk.setProposalQueue(ctx, candidateQueue)
+}
+
+// ProposalQueueUpdate updates a candidate with new priority
+func (bk BallotKeeper) ProposalQueueUpdate(ctx sdk.Context, identifier string, newBlockNum int64) sdk.Error {
+	candidateQueue := bk.getCandidateQueue(ctx)
+
+	err := candidateQueue.Update(identifier, int(newBlockNum))
+	if err != nil {
+		return err
+	}
+	bk.setProposalQueue(ctx, candidateQueue)
+	return nil
 }
