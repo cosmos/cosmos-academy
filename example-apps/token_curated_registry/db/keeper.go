@@ -243,7 +243,7 @@ func (bk BallotKeeper) getCandidateQueue(ctx sdk.Context) tcr.PriorityQueue {
 	}
 
 	candidateQueue := tcr.PriorityQueue{}
-	err := bk.Cdc.UnmarshalBinaryBare(bpq, candidateQueue)
+	err := bk.Cdc.UnmarshalBinaryBare(bpq, &candidateQueue)
 	if err != nil {
 		panic(err)
 	}
@@ -252,7 +252,7 @@ func (bk BallotKeeper) getCandidateQueue(ctx sdk.Context) tcr.PriorityQueue {
 }
 
 // setProposalQueue sets the CandidateQueue to the context
-func (bk BallotKeeper) setProposalQueue(ctx sdk.Context, candidateQueue tcr.PriorityQueue) {
+func (bk BallotKeeper) setCandidateQueue(ctx sdk.Context, candidateQueue tcr.PriorityQueue) {
 	store := ctx.KVStore(bk.BallotKey)
 	bpq, err := bk.Cdc.MarshalBinaryBare(candidateQueue)
 	if err != nil {
@@ -294,7 +294,7 @@ func (bk BallotKeeper) ProposalQueuePush(ctx sdk.Context, identifier string, blo
 
 	item := tcr.Item{Value: identifier, Priority: int(blockNum)}
 	heap.Push(&candidateQueue, &item)
-	bk.setProposalQueue(ctx, candidateQueue)
+	bk.setCandidateQueue(ctx, candidateQueue)
 }
 
 // ProposalQueueUpdate updates a candidate with new priority
@@ -305,6 +305,6 @@ func (bk BallotKeeper) ProposalQueueUpdate(ctx sdk.Context, identifier string, n
 	if err != nil {
 		return err
 	}
-	bk.setProposalQueue(ctx, candidateQueue)
+	bk.setCandidateQueue(ctx, candidateQueue)
 	return nil
 }

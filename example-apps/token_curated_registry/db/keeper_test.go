@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	abci "github.com/tendermint/abci/types"
 	"testing"
+	"container/heap"
 
 	tcr "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
@@ -171,9 +172,37 @@ func TestAddDeleteList(t *testing.T) {
 
 	delListing := keeper.GetListing(ctx, "Unique registry listing")
 
-	assert.Equal(t, tcr.Listing{}, delListing, "Listing not added correctly")
+	assert.Equal(t, tcr.Listing{}, delListing, "Listing not deleted correctly")
 }
 
 // ------------------------------------------------------------------------------------------------------------------
 // Test CandidateQueue
+
+func TestQueue(t *testing.T) {
+	ms, listKey, ballotKey, _ := SetupMultiStore()
+	cdc := MakeCodec()
+
+	ctx := sdk.NewContext(ms, abci.Header{}, false, nil, log.NewNopLogger())
+	ctx.WithBlockHeight(10)
+	keeper := NewBallotKeeper(listKey, ballotKey, cdc)
+
+	assert.Equal(t, tcr.PriorityQueue{}, keeper.getCandidateQueue(ctx), "Incorrect behavior on init")
+
+	candidateQueue := tcr.PriorityQueue{}
+	item := tcr.Item{Value: "a", Priority: 10}
+	heap.Push(&candidateQueue, &item)
+	keeper.setCandidateQueue(ctx, candidateQueue)
+
+	item2 := tcr.Item{Value: "b", Priority: 5}
+	heap.Push(&candidateQueue, &item2)
+	keeper.setCandidateQueue(ctx, candidateQueue)
+
+	queue := keeper.getCandidateQueue(ctx)
+	assert.Equal(t, item2, queue.Peek(), "Peek does not work")
+
+	assert.Equal(t, item2.Value, heap.Pop(&queue).(*tcr.Item).Value, "Pop does not work")
+
+	assert.Equal(t, item.Value, heap.Pop(&queue).(*tcr.Item).Value, "Pop does not work")
+} 
+
 
