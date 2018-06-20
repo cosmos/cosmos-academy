@@ -9,10 +9,51 @@ import (
 	abci "github.com/tendermint/abci/types"
 	"testing"
 
-	tcr "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
 	"github.com/tendermint/tmlibs/log"
 )
+
+func TestAddGet(t *testing.T) {
+	ms, listKey, ballotKey, _ := SetupMultiStore()
+	cdc := MakeCodec()
+
+	ctx := sdk.NewContext(ms, abci.Header{}, false, nil, log.NewNopLogger())
+
+	keeper := NewBallotKeeper(listKey, ballotKey, cdc)
+
+	addr := utils.GenerateAddress()
+	keeper.AddBallot(ctx, "Unique registry listing", addr, 5, 50)
+
+	ballot := types.Ballot{
+		Identifier:         "Unique registry listing",
+		Owner:              addr,
+		Bond:               50,
+		EndApplyBlockStamp: 5,
+	}
+
+	getBallot := keeper.GetBallot(ctx, "Unique registry listing")
+
+	assert.Equal(t, getBallot, ballot, "Ballot received from store does not match expected value")
+}
+
+func TestDelete(t *testing.T) {
+	ms, listKey, ballotKey, _ := SetupMultiStore()
+	cdc := MakeCodec()
+
+	ctx := sdk.NewContext(ms, abci.Header{}, false, nil, log.NewNopLogger())
+	ctx.WithBlockHeight(10)
+	keeper := NewBallotKeeper(listKey, ballotKey, cdc)
+
+	addr := utils.GenerateAddress()
+	keeper.AddBallot(ctx, "Unique registry listing", addr, 5, 50)
+
+	keeper.DeleteBallot(ctx, "Unique registry listing")
+
+	ballot := keeper.GetBallot(ctx, "Unique registry listing")
+
+	assert.Equal(t, types.Ballot{}, ballot, "Ballot was not correctly deleted")
+}
 
 func TestActivate(t *testing.T) {
 	ms, listKey, ballotKey, accountKey := SetupMultiStore()
@@ -20,17 +61,14 @@ func TestActivate(t *testing.T) {
 
 	ctx := sdk.NewContext(ms, abci.Header{}, false, nil, log.NewNopLogger())
 	ctx.WithBlockHeight(10)
-	mapper := NewBallotMapper(ballotKey, cdc)
+	keeper := NewBallotKeeper(listKey, ballotKey, cdc)
 
 	addr := utils.GenerateAddress()
 	account := auth.NewBaseAccountWithAddress(addr)
+	keeper.AddBallot(ctx, "Unique registry listing", addr, 5, 50)
 
 	accountMapper := auth.NewAccountMapper(cdc, accountKey, &auth.BaseAccount{})
 	accountKeeper := bank.NewKeeper(accountMapper)
-
-	keeper := NewBallotKeeper(mapper, accountKeeper, listKey)
-
-	keeper.AddBallot(ctx, "Unique registry listing", addr, 5, 50)
 
 	accountMapper.SetAccount(ctx, &account)
 	testaccount := accountMapper.GetAccount(ctx, addr)
@@ -39,11 +77,11 @@ func TestActivate(t *testing.T) {
 
 	// Touch and remove case: Bond posted is less than new minBond
 	challenger := utils.GenerateAddress()
-	keeper.ActivateBallot(ctx, addr, challenger, "Unique registry listing", 10, 10, 100, 100)
+	keeper.ActivateBallot(ctx, accountKeeper, addr, challenger, "Unique registry listing", 10, 10, 100, 100)
 
 	delBallot := keeper.GetBallot(ctx, "Unique registry listing")
 
-	assert.Equal(t, tcr.Ballot{}, delBallot, "Outdated ballot was not deleted")
+	assert.Equal(t, types.Ballot{}, delBallot, "Outdated ballot was not deleted")
 
 	// Check that challenger is refunded
 	coins := accountKeeper.GetCoins(ctx, challenger)
@@ -51,16 +89,16 @@ func TestActivate(t *testing.T) {
 
 	// Test Activating with less than posted bond
 	keeper.AddBallot(ctx, "Unique registry listing", addr, 5, 150)
-	err := keeper.ActivateBallot(ctx, addr, challenger, "Unique registry listing", 10, 10, 100, 100)
+	err := keeper.ActivateBallot(ctx, accountKeeper, addr, challenger, "Unique registry listing", 10, 10, 100, 100)
 
-	assert.Equal(t, sdk.CodeType(103), err.Code(), err.Error())
+	assert.Equal(t, sdk.CodeType(115), err.Code(), err.Error())
 
-	err = mapper.ActivateBallot(ctx, addr, challenger, "Unique registry listing", 10, 10, 100, 200)
+	err = keeper.ActivateBallot(ctx, accountKeeper, addr, challenger, "Unique registry listing", 10, 10, 100, 200)
 
-	assert.Equal(t, sdk.CodeType(103), err.Code(), err.Error())
+	assert.Equal(t, sdk.CodeType(115), err.Code(), err.Error())
 
 	// Test valid activation
-	err = keeper.ActivateBallot(ctx, addr, challenger, "Unique registry listing", 10, 10, 100, 150)
+	err = keeper.ActivateBallot(ctx, accountKeeper, addr, challenger, "Unique registry listing", 10, 10, 100, 150)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -70,24 +108,37 @@ func TestActivate(t *testing.T) {
 	assert.Equal(t, true, ballot.Active, "Ballot not activated")
 }
 
-func TestAddDeleteList(t *testing.T) {
-	ms, listKey, ballotKey, accountKey := SetupMultiStore()
+func TestVote(t *testing.T) {
+	ms, listKey, ballotKey, _ := SetupMultiStore()
 	cdc := MakeCodec()
 
 	ctx := sdk.NewContext(ms, abci.Header{}, false, nil, log.NewNopLogger())
 	ctx.WithBlockHeight(10)
-	mapper := NewBallotMapper(ballotKey, cdc)
+	keeper := NewBallotKeeper(listKey, ballotKey, cdc)
 
-	accountMapper := auth.NewAccountMapper(cdc, accountKey, &auth.BaseAccount{})
-	accountKeeper := bank.NewKeeper(accountMapper)
+	addr := utils.GenerateAddress()
+	keeper.AddBallot(ctx, "Unique registry listing", addr, 5, 50)
 
-	keeper := NewBallotKeeper(mapper, accountKeeper, listKey)
+	keeper.VoteBallot(ctx, addr, "Unique registry listing", true, 50)
+
+	ballot := keeper.GetBallot(ctx, "Unique registry listing")
+
+	assert.Equal(t, int64(50), ballot.Approve, "Votes did not increment correctly")
+}
+
+func TestAddDeleteList(t *testing.T) {
+	ms, listKey, ballotKey, _ := SetupMultiStore()
+	cdc := MakeCodec()
+
+	ctx := sdk.NewContext(ms, abci.Header{}, false, nil, log.NewNopLogger())
+	ctx.WithBlockHeight(10)
+	keeper := NewBallotKeeper(listKey, ballotKey, cdc)
 
 	keeper.AddListing(ctx, "Unique registry listing", 200)
 
 	listing := keeper.GetListing(ctx, "Unique registry listing")
 
-	expected := tcr.Listing{
+	expected := types.Listing{
 		Identifier: "Unique registry listing",
 		Votes:      200,
 	}
@@ -98,5 +149,5 @@ func TestAddDeleteList(t *testing.T) {
 
 	delListing := keeper.GetListing(ctx, "Unique registry listing")
 
-	assert.Equal(t, tcr.Listing{}, delListing, "Listing not added correctly")
+	assert.Equal(t, types.Listing{}, delListing, "Listing not added correctly")
 }
