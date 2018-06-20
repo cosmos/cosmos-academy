@@ -9,7 +9,7 @@ import (
 	abci "github.com/tendermint/abci/types"
 	"testing"
 
-	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	tcr "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/utils"
 	"github.com/tendermint/tmlibs/log"
 )
@@ -25,7 +25,7 @@ func TestAddGet(t *testing.T) {
 	addr := utils.GenerateAddress()
 	keeper.AddBallot(ctx, "Unique registry listing", addr, 5, 50)
 
-	ballot := types.Ballot{
+	ballot := tcr.Ballot{
 		Identifier:         "Unique registry listing",
 		Owner:              addr,
 		Bond:               50,
@@ -52,7 +52,7 @@ func TestDelete(t *testing.T) {
 
 	ballot := keeper.GetBallot(ctx, "Unique registry listing")
 
-	assert.Equal(t, types.Ballot{}, ballot, "Ballot was not correctly deleted")
+	assert.Equal(t, tcr.Ballot{}, ballot, "Ballot was not correctly deleted")
 }
 
 func TestActivate(t *testing.T) {
@@ -81,7 +81,7 @@ func TestActivate(t *testing.T) {
 
 	delBallot := keeper.GetBallot(ctx, "Unique registry listing")
 
-	assert.Equal(t, types.Ballot{}, delBallot, "Outdated ballot was not deleted")
+	assert.Equal(t, tcr.Ballot{}, delBallot, "Outdated ballot was not deleted")
 
 	// Check that challenger is refunded
 	coins := accountKeeper.GetCoins(ctx, challenger)
@@ -108,6 +108,24 @@ func TestActivate(t *testing.T) {
 	assert.Equal(t, true, ballot.Active, "Ballot not activated")
 }
 
+func TestCommit(t *testing.T) {
+	ms, listKey, ballotKey, _ := SetupMultiStore()
+	cdc := MakeCodec()
+
+	ctx := sdk.NewContext(ms, abci.Header{}, false, nil, log.NewNopLogger())
+	ctx.WithBlockHeight(10)
+	keeper := NewBallotKeeper(listKey, ballotKey, cdc)
+
+	addr := utils.GenerateAddress()
+	keeper.AddBallot(ctx, "Unique registry listing", addr, 5, 50)
+
+	keeper.CommitBallot(ctx, addr, "Unique registry listing", []byte("my commitment"))
+
+	commitment := keeper.GetCommitment(ctx, addr, "Unique registry listing")
+
+	assert.Equal(t, []byte("my commitment"), commitment, "Commitment not added to ballotStore correctly")
+}
+
 func TestVote(t *testing.T) {
 	ms, listKey, ballotKey, _ := SetupMultiStore()
 	cdc := MakeCodec()
@@ -124,6 +142,10 @@ func TestVote(t *testing.T) {
 	ballot := keeper.GetBallot(ctx, "Unique registry listing")
 
 	assert.Equal(t, int64(50), ballot.Approve, "Votes did not increment correctly")
+
+	vote := keeper.GetVote(ctx, addr, "Unique registry listing")
+
+	assert.Equal(t, tcr.Vote{true, 50}, vote, "Vote did not get added to ballotStore correctly")
 }
 
 func TestAddDeleteList(t *testing.T) {
@@ -138,7 +160,7 @@ func TestAddDeleteList(t *testing.T) {
 
 	listing := keeper.GetListing(ctx, "Unique registry listing")
 
-	expected := types.Listing{
+	expected := tcr.Listing{
 		Identifier: "Unique registry listing",
 		Votes:      200,
 	}
@@ -149,5 +171,5 @@ func TestAddDeleteList(t *testing.T) {
 
 	delListing := keeper.GetListing(ctx, "Unique registry listing")
 
-	assert.Equal(t, types.Listing{}, delListing, "Listing not added correctly")
+	assert.Equal(t, tcr.Listing{}, delListing, "Listing not added correctly")
 }

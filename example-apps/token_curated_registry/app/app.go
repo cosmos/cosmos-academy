@@ -51,7 +51,7 @@ type RegistryApp struct {
 
 	feeKeeper    auth.FeeCollectionKeeper
 
-	ballotMapper dbl.BallotMapper
+	ballotKeeper dbl.BallotKeeper
 
 	// Manage addition and subtraction of account balances
 	accountMapper auth.AccountMapper
@@ -75,25 +75,21 @@ func NewRegistryApp(logger log.Logger, db dbm.DB, mindeposit int64, applystage i
 		capKeyAccount:   sdk.NewKVStoreKey("acc"),
 		capKeyFees:      sdk.NewKVStoreKey("fee"),
 		capKeyListings:  sdk.NewKVStoreKey("listings"),
-		capKeyCommits:   sdk.NewKVStoreKey("commits"),
-		capKeyReveals:   sdk.NewKVStoreKey("reveals"),
 		capKeyBallots:   sdk.NewKVStoreKey("ballots"),
 	}
 
 	app.feeKeeper = auth.NewFeeCollectionKeeper(cdc, app.capKeyFees)
 
-	app.ballotMapper = dbl.NewBallotMapper(app.capKeyListings, app.capKeyBallots, app.capKeyCommits, app.capKeyReveals, app.cdc)
+	app.ballotKeeper = dbl.NewBallotKeeper(app.capKeyListings, app.capKeyBallots, app.cdc)
 	app.accountMapper = auth.NewAccountMapper(app.cdc, app.capKeyAccount, &auth.BaseAccount{})
 	app.accountKeeper = bank.NewKeeper(app.accountMapper)
 
 	app.Router().
-		AddRoute("DeclareCandidacy", handle.NewCandidacyHandler(app.accountKeeper, app.ballotMapper, app.minDeposit, app.applyStage)).
-		AddRoute("Challenge", handle.NewChallengeHandler(app.accountKeeper, app.ballotMapper, app.commitStage, app.revealStage, app.minDeposit)).
-		AddRoute("Commit", handle.NewCommitHandler(app.cdc, app.capKeyBallots, app.capKeyCommits)).
-		AddRoute("Reveal", handle.NewRevealHandler(app.accountKeeper, app.ballotMapper)).
-		AddRoute("Apply", handle.NewApplyHandler(app.accountKeeper, app.ballotMapper, app.capKeyListings, app.quorum, app.dispensationPct)).
-		AddRoute("ClaimReward", handle.NewClaimRewardHandler(app.cdc, app.accountKeeper, app.capKeyBallots, app.capKeyReveals, app.capKeyListings, app.dispensationPct))
-
+		AddRoute("DeclareCandidacy", handle.NewCandidacyHandler(app.accountKeeper, app.ballotKeeper, app.minDeposit, app.applyStage)).
+		AddRoute("Challenge", handle.NewChallengeHandler(app.accountKeeper, app.ballotKeeper, app.commitStage, app.revealStage, app.minDeposit)).
+		AddRoute("Commit", handle.NewCommitHandler(app.cdc, app.ballotKeeper)).
+		AddRoute("Reveal", handle.NewRevealHandler(app.accountKeeper, app.ballotKeeper))
+		
 	app.SetTxDecoder(app.txDecoder)
 	app.SetInitChainer(app.initChainer)
 	app.MountStoresIAVL(app.capKeyMain, app.capKeyAccount, app.capKeyFees, app.capKeyListings, app.capKeyCommits, app.capKeyReveals, app.capKeyBallots)

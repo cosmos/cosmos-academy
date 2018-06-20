@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
+	tcr "github.com/cosmos/cosmos-academy/example-apps/token_curated_registry/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/tendermint/go-amino"
@@ -24,14 +24,14 @@ func NewBallotKeeper(listingKey sdk.StoreKey, ballotkey sdk.StoreKey, _cdc *amin
 }
 
 // Will get Ballot using unique identifier. Do not need to specify status
-func (bk BallotKeeper) GetBallot(ctx sdk.Context, identifier string) types.Ballot {
+func (bk BallotKeeper) GetBallot(ctx sdk.Context, identifier string) tcr.Ballot {
 	store := ctx.KVStore(bk.BallotKey)
 	key := []byte(identifier)
 	val := store.Get(key)
 	if val == nil {
-		return types.Ballot{}
+		return tcr.Ballot{}
 	}
-	ballot := &types.Ballot{}
+	ballot := &tcr.Ballot{}
 	err := bk.Cdc.UnmarshalBinary(val, ballot)
 	if err != nil {
 		panic(err)
@@ -42,7 +42,7 @@ func (bk BallotKeeper) GetBallot(ctx sdk.Context, identifier string) types.Ballo
 func (bk BallotKeeper) AddBallot(ctx sdk.Context, identifier string, owner sdk.Address, applyLen int64, bond int64) sdk.Error {
 	store := ctx.KVStore(bk.BallotKey)
 
-	newBallot := types.Ballot{
+	newBallot := tcr.Ballot{
 		Identifier:         identifier,
 		Owner:              owner,
 		Bond:               bond,
@@ -88,6 +88,36 @@ func (bk BallotKeeper) ActivateBallot(ctx sdk.Context, accountKeeper bank.Keeper
 	return nil
 }
 
+func (bk BallotKeeper) CommitBallot(ctx sdk.Context, owner sdk.Address, identifier string, commitment []byte) {
+	commitKey := []byte(identifier)
+	commitKey = append(commitKey, []byte("commits")...)
+	commitKey = append(commitKey, owner...)
+
+	ballotStore := ctx.KVStore(bk.BallotKey)
+
+	ballotStore.Set(commitKey, commitment)
+}
+
+func (bk BallotKeeper) GetCommitment(ctx sdk.Context, owner sdk.Address, identifier string) []byte {
+	commitKey := []byte(identifier)
+	commitKey = append(commitKey, []byte("commits")...)
+	commitKey = append(commitKey, owner...)
+
+	ballotStore := ctx.KVStore(bk.BallotKey)
+
+	return ballotStore.Get(commitKey)
+}
+
+func (bk BallotKeeper) DeleteCommitment(ctx sdk.Context, owner sdk.Address, identifier string) {
+	commitKey := []byte(identifier)
+	commitKey = append(commitKey, []byte("commits")...)
+	commitKey = append(commitKey, owner...)
+
+	ballotStore := ctx.KVStore(bk.BallotKey)
+
+	ballotStore.Delete(commitKey)
+}
+
 func (bk BallotKeeper) VoteBallot(ctx sdk.Context, owner sdk.Address, identifier string, vote bool, power int64) sdk.Error {
 	ballotStore := ctx.KVStore(bk.BallotKey)
 
@@ -96,7 +126,7 @@ func (bk BallotKeeper) VoteBallot(ctx sdk.Context, owner sdk.Address, identifier
 	if bz == nil {
 		return sdk.NewError(2, 107, "Ballot does not exist")
 	}
-	ballot := &types.Ballot{}
+	ballot := &tcr.Ballot{}
 	err := bk.Cdc.UnmarshalBinary(bz, ballot)
 	if err != nil {
 		panic(err)
@@ -109,7 +139,51 @@ func (bk BallotKeeper) VoteBallot(ctx sdk.Context, owner sdk.Address, identifier
 	newBallot, _ := bk.Cdc.MarshalBinary(*ballot)
 	ballotStore.Set(ballotKey, newBallot)
 
+	voteStruct := tcr.Vote{Choice: vote, Power: power}
+	voteVal, err2 := bk.Cdc.MarshalBinary(voteStruct)
+
+	if err2 != nil {
+		panic(err2)
+	}
+
+	// Set voteKey to "{identifier}|votes|{owner_address}|
+	voteKey := []byte(identifier)
+	voteKey = append(voteKey, []byte("votes")...)
+	voteKey = append(voteKey, owner...)
+
+	ballotStore.Set(voteKey, voteVal)
 	return nil
+}
+
+func (bk BallotKeeper) GetVote(ctx sdk.Context, owner sdk.Address, identifier string) tcr.Vote {
+	// Set voteKey to "{identifier}|votes|{owner_address}|
+	voteKey := []byte(identifier)
+	voteKey = append(voteKey, []byte("votes")...)
+	voteKey = append(voteKey, owner...)
+
+	vote := &tcr.Vote{}
+	ballotStore := ctx.KVStore(bk.BallotKey)
+
+	bz := ballotStore.Get(voteKey)
+	if bz == nil {
+		return tcr.Vote{}
+	}
+
+	err := bk.Cdc.UnmarshalBinary(bz, vote)
+	if err != nil {
+		panic(err)
+	}
+	return *vote
+}
+
+func (bk BallotKeeper) DeleteVote(ctx sdk.Context, owner sdk.Address, identifier string) {
+	voteKey := []byte(identifier)
+	voteKey = append(voteKey, []byte("votes")...)
+	voteKey = append(voteKey, owner...)
+
+	ballotStore := ctx.KVStore(bk.BallotKey)
+
+	ballotStore.Delete(voteKey)
 }
 
 func (bk BallotKeeper) DeleteBallot(ctx sdk.Context, identifier string) {
@@ -122,7 +196,7 @@ func (bk BallotKeeper) AddListing(ctx sdk.Context, identifier string, votes int6
 	key := []byte(identifier)
 	store := ctx.KVStore(bk.ListingKey)
 
-	listing := types.Listing{
+	listing := tcr.Listing{
 		Identifier: identifier,
 		Votes:      votes,
 	}
@@ -131,15 +205,15 @@ func (bk BallotKeeper) AddListing(ctx sdk.Context, identifier string, votes int6
 	store.Set(key, val)
 }
 
-func (bk BallotKeeper) GetListing(ctx sdk.Context, identifier string) types.Listing {
+func (bk BallotKeeper) GetListing(ctx sdk.Context, identifier string) tcr.Listing {
 	key := []byte(identifier)
 	store := ctx.KVStore(bk.ListingKey)
 
 	bz := store.Get(key)
 	if bz == nil {
-		return types.Listing{}
+		return tcr.Listing{}
 	}
-	listing := &types.Listing{}
+	listing := &tcr.Listing{}
 	err := bk.Cdc.UnmarshalBinary(bz, listing)
 	if err != nil {
 		panic(err)
