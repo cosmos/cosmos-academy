@@ -31,6 +31,9 @@ func NewCandidacyHandler(accountKeeper bank.Keeper, ballotKeeper db.BallotKeeper
 		if err2 != nil {
 			return err2.Result()
 		}
+
+		ballotKeeper.ProposalQueuePush(ctx, declareMsg.Identifier, ctx.BlockHeight() + applyLen)
+
 		return sdk.Result{}
 	}
 }
@@ -68,6 +71,9 @@ func NewChallengeHandler(accountKeeper bank.Keeper, ballotKeeper db.BallotKeeper
 		if err3 != nil {
 			return err3.Result()
 		}
+
+		ballotKeeper.ProposalQueueUpdate(ctx, challengeMsg.Identifier, ctx.BlockHeight() + commitLen + revealLen)
+
 		return sdk.Result{}
 	}
 }

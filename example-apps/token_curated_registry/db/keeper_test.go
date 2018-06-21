@@ -203,6 +203,18 @@ func TestQueue(t *testing.T) {
 	assert.Equal(t, item2.Value, heap.Pop(&queue).(*tcr.Item).Value, "Pop does not work")
 
 	assert.Equal(t, item.Value, heap.Pop(&queue).(*tcr.Item).Value, "Pop does not work")
+
+	queue = keeper.getCandidateQueue(ctx)
+	queue.Update("b", 12)
+
+	keeper.setCandidateQueue(ctx, queue)
+
+	queue = keeper.getCandidateQueue(ctx)
+
+	assert.Equal(t, item.Value, heap.Pop(&queue).(*tcr.Item).Value, "Pop does not work")
+
+	assert.Equal(t, item2.Value, heap.Pop(&queue).(*tcr.Item).Value, "Pop does not work")
+
 } 
 
 

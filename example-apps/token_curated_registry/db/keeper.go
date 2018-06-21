@@ -308,3 +308,25 @@ func (bk BallotKeeper) ProposalQueueUpdate(ctx sdk.Context, identifier string, n
 	bk.setCandidateQueue(ctx, candidateQueue)
 	return nil
 }
+
+func (bk BallotKeeper) ProposalQueueContains(ctx sdk.Context, identifier string) bool {
+	candidateQueue := bk.getCandidateQueue(ctx)
+
+	for _, item := range candidateQueue {
+		if item.Value == identifier {
+			return true
+		}
+	}
+	return false
+}
+
+func (bk BallotKeeper) ProposalQueueGetPriority(ctx sdk.Context, identifier string) int {
+	candidateQueue := bk.getCandidateQueue(ctx)
+
+	for _, item := range candidateQueue {
+		if item.Value == identifier {
+			return item.Priority
+		}
+	}
+	return -1
+}

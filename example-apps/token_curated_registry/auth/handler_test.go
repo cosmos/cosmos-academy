@@ -62,6 +62,9 @@ func TestCandidacyHandler(t *testing.T) {
 	// Check that adding candidate twice fails
 	res = handler(ctx, msg)
 
+	assert.True(t, keeper.ProposalQueueContains(ctx, "Unique registry listing"), "Proposal queue does not contain listing")
+	assert.Equal(t, int(ctx.BlockHeight() + 10), keeper.ProposalQueueGetPriority(ctx, "Unique registry listing"), "Proposal added with incorrect priority")
+
 	assert.Equal(t, sdk.ABCICodeType(0x1000a), res.Code, "Candidate allowed to be added twice")
 }
 
@@ -116,6 +119,8 @@ func TestChallengeHandler(t *testing.T) {
 	}})
 	accountMapper.SetAccount(ctx, &challengerAcc)
 
+	assert.Equal(t, int(ctx.BlockHeight() + 10), keeper.ProposalQueueGetPriority(ctx, "Unique registry listing"), "Priority in queue before challenge is wrong")
+
 	res = handler(ctx, challengeMsg)
 
 	// Valid challengeMsg changes state correcty
@@ -123,6 +128,8 @@ func TestChallengeHandler(t *testing.T) {
 	assert.Equal(t, true, ballot.Active, "Ballot correctly Activated")
 	assert.Equal(t, int64(10), ballot.EndCommitBlockStamp, "Ballot commitstamp wrong")
 	assert.Equal(t, int64(20), ballot.EndApplyBlockStamp, "Ballot revealstamp wrong")
+
+	assert.Equal(t, int(ctx.BlockHeight() + 20), keeper.ProposalQueueGetPriority(ctx, "Unique registry listing"), "Priority not updated correctly")
 
 	assert.Equal(t, sdk.Result{}, res, "Handler did not pass")
 
