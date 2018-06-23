@@ -123,6 +123,7 @@ func (app *RegistryApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) 
 	return abci.ResponseInitChain{}
 }
 
+// EndBlocker finalizes the ballot at the head of the queue if it has passed reveal phase. It also distributes rewards.
 func (app *RegistryApp) endBlocker(ctx sdk.Context, req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
 	ballot := app.ballotKeeper.ProposalQueueHead(ctx)
 

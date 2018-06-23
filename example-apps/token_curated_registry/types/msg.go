@@ -15,6 +15,7 @@ const (
 // DeclareCandidacyMsg is used to propose a new listing to be added to registry.
 // Identifier is a unique identifier of the listing
 // Deposit is taken and held for entire duration of listing. Awarded to challengers upon successful challenge.
+// Users can add details about candidate to convince voters to approve listing
 type DeclareCandidacyMsg struct {
 	Owner      sdk.Address
 	Identifier string
