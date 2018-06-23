@@ -186,86 +186,11 @@ func (msg RevealMsg) GetSigners() []sdk.Address {
 	return []sdk.Address{msg.Owner}
 }
 
-// ===================================================================================================================================
-
-// ApplyMsg is used to finalize results of completed challenge. May be called by anyone.
-type ApplyMsg struct {
-	Owner      sdk.Address
-	Identifier string
-}
-
-func NewApplyMsg(owner sdk.Address, identifier string) ApplyMsg {
-	return ApplyMsg{
-		Owner:      owner,
-		Identifier: identifier,
-	}
-}
-
-func (msg ApplyMsg) Type() string {
-	return "Apply"
-}
-
-func (msg ApplyMsg) ValidateBasic() sdk.Error {
-	return nil
-}
-
-func (msg ApplyMsg) GetSignBytes() []byte {
-	b, err := json.Marshal(msg)
-	if err != nil {
-		panic(err)
-	}
-	return b
-}
-
-func (msg ApplyMsg) GetSigners() []sdk.Address {
-	return []sdk.Address{msg.Owner}
-}
-
-// ===================================================================================================================================
-
-// ClaimRewardMsg is used to claim the reward/refund after a challenge has been applied.
-type ClaimRewardMsg struct {
-	Owner      sdk.Address
-	Identifier string
-}
-
-func NewClaimRewardMsg(owner sdk.Address, identifier string) ClaimRewardMsg {
-	return ClaimRewardMsg{
-		Owner:      owner,
-		Identifier: identifier,
-	}
-}
-
-func (msg ClaimRewardMsg) Type() string {
-	return "ClaimReward"
-}
-
-func (msg ClaimRewardMsg) ValidateBasic() sdk.Error {
-	if msg.Owner == nil {
-		return sdk.ErrInvalidAddress("Must provide Owner address")
-	}
-	return nil
-}
-
-func (msg ClaimRewardMsg) GetSignBytes() []byte {
-	b, err := json.Marshal(msg)
-	if err != nil {
-		panic(err)
-	}
-	return b
-}
-
-func (msg ClaimRewardMsg) GetSigners() []sdk.Address {
-	return []sdk.Address{msg.Owner}
-}
-
 func RegisterAmino(cdc *amino.Codec) {
 	cdc.RegisterConcrete(DeclareCandidacyMsg{}, "types/DeclareCandidacyMsg", nil)
 	cdc.RegisterConcrete(ChallengeMsg{}, "types/ChallengeMsg", nil)
 	cdc.RegisterConcrete(CommitMsg{}, "types/CommintMsg", nil)
 	cdc.RegisterConcrete(RevealMsg{}, "types/RevealMsg", nil)
-	cdc.RegisterConcrete(ApplyMsg{}, "types/ApplyMsg", nil)
-	cdc.RegisterConcrete(ClaimRewardMsg{}, "types/ClaimRewardMsg", nil)
 	cdc.RegisterConcrete(Listing{}, "types/Listing", nil)
 	cdc.RegisterConcrete(Vote{}, "types/Vote", nil)
 	cdc.RegisterConcrete(Ballot{}, "types/Ballot", nil)

@@ -80,6 +80,10 @@ func (bk BallotKeeper) ActivateBallot(ctx sdk.Context, accountKeeper bank.Keeper
 
 	ballot.Active = true
 	ballot.Challenger = challenger
+	// Reset votes to 0. Could have sme other policy, but this is simple
+	ballot.Approve = 0
+	ballot.Deny = 0
+	// Rest Blockstamps
 	ballot.EndCommitBlockStamp = ctx.BlockHeight() + commitLen
 	ballot.EndApplyBlockStamp = ballot.EndCommitBlockStamp + revealLen
 
