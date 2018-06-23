@@ -1,6 +1,4 @@
 # Building an Application on the Cosmos SDK
-Note this is written from my understanding of writing an application, not all information may be correct.
-TODO: Add CLI stuff
 
 ## Description of the application (Covenant Coin)
 
@@ -174,4 +172,4 @@ For our test, we initialize the blockchain to give an account `x` money. We then
 And we see that covenants work as expected.
 
 ### CLI Stuff
-TODO: we need to add the code so that this all works from the command line.
+TODO: guide to writing CLI commands
