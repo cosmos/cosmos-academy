@@ -285,6 +285,7 @@ func (bk BallotKeeper) ProposalQueuePop(ctx sdk.Context) tcr.Ballot {
 	}
 
 	ballot := bk.GetBallot(ctx, heap.Pop(&candidateQueue).(*tcr.Item).Value)
+	bk.setCandidateQueue(ctx, candidateQueue)
 	return ballot
 }
 

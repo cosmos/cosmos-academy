@@ -13,6 +13,9 @@ import (
 func NewCandidacyHandler(accountKeeper bank.Keeper, ballotKeeper db.BallotKeeper, minBond int64, applyLen int64) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		declareMsg := msg.(tcr.DeclareCandidacyMsg)
+		if declareMsg.Identifier == "" || declareMsg.Identifier == "candidateQueue" {
+			return tcr.ErrInvalidBallot(tcr.DefaultCodespace, "Cannot use reserved identifiers for ballot").Result()
+		}
 		if declareMsg.Deposit.Amount < minBond {
 			return sdk.ErrInsufficientFunds("Must send at least the minimum bond").Result()
 		}

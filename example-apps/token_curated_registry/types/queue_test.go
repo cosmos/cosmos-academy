@@ -17,8 +17,8 @@ func TestAddPopUpdate(t *testing.T) {
 	i := 0
 	for value, priority := range items {
 		pq[i] = &Item{
-			value:    value,
-			priority: priority,
+			Value:    value,
+			Priority: priority,
 			index:    i,
 		}
 		i++
@@ -27,14 +27,14 @@ func TestAddPopUpdate(t *testing.T) {
 
 	// Insert a new item and then modify its priority.
 	item := &Item{
-		value:    "orange",
-		priority: 1,
+		Value:    "orange",
+		Priority: 1,
 	}
 	heap.Push(&pq, item)
 
-	assert.Equal(t, "orange", pq.Peek().value, "Peek does not work")
+	assert.Equal(t, "orange", pq.Peek().Value, "Peek does not work")
 
-	pq.Update(item.value, 5)
+	pq.Update(item.Value, 5)
 
 	pq.Remove("tomato")
 
@@ -44,7 +44,7 @@ func TestAddPopUpdate(t *testing.T) {
 
 	// Take the items out; they arrive in increasing priority order.
 	for pq.Len() > 0 {
-		actual = append(actual, heap.Pop(&pq).(*Item).value)
+		actual = append(actual, heap.Pop(&pq).(*Item).Value)
 	}
 	
 	assert.Equal(t, expected, actual, "Push and pop do not work")

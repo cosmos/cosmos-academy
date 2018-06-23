@@ -90,6 +90,7 @@ func NewRegistryApp(logger log.Logger, db dbm.DB, mindeposit int64, applystage i
 		
 	app.SetTxDecoder(app.txDecoder)
 	app.SetInitChainer(app.initChainer)
+	app.SetEndBlocker(app.endBlocker)
 	app.MountStoresIAVL(app.capKeyMain, app.capKeyAccount, app.capKeyFees, app.capKeyListings, app.capKeyBallots)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountMapper, app.feeKeeper))
 
@@ -120,6 +121,76 @@ func (app *RegistryApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) 
 		app.accountMapper.SetAccount(ctx, acc)
 	}
 	return abci.ResponseInitChain{}
+}
+
+func (app *RegistryApp) endBlocker(ctx sdk.Context, req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
+	ballot := app.ballotKeeper.ProposalQueueHead(ctx)
+
+	if ctx.BlockHeight() < ballot.EndApplyBlockStamp || ballot.Identifier == "" {
+		return
+	}
+
+	app.ballotKeeper.ProposalQueuePop(ctx)
+
+	if !ballot.Active {
+		// Perhaps put in something other than 0 here
+		app.ballotKeeper.AddListing(ctx, ballot.Identifier, 0)
+		return 
+	}
+
+	total := ballot.Approve + ballot.Deny
+	var correctVote bool
+	var pool float64
+	if float64(ballot.Approve) / float64(total) > app.quorum {
+		app.ballotKeeper.AddListing(ctx, ballot.Identifier, ballot.Approve)
+		// award proposer dispensationPct of challenger bond
+		reward := int64(float64(ballot.Bond) * app.dispensationPct)
+		app.accountKeeper.AddCoins(ctx, ballot.Owner, sdk.Coins{{"RegistryCoin", reward}})
+		correctVote = true
+		pool = float64(ballot.Approve)
+	} else {
+		app.ballotKeeper.DeleteListing(ctx, ballot.Identifier)
+		app.ballotKeeper.DeleteBallot(ctx, ballot.Identifier)
+
+		// award challenger his original bond + dispensationPct of challenger bond
+		reward := ballot.Bond + int64(float64(ballot.Bond) * app.dispensationPct)
+		app.accountKeeper.AddCoins(ctx, ballot.Challenger, sdk.Coins{{"RegistryCoin", reward}})
+
+		correctVote = false
+		pool = float64(ballot.Deny)
+	}
+
+	prefixKey := []byte(ballot.Identifier + "votes")
+	store := ctx.KVStore(app.capKeyBallots)
+	iter := sdk.KVStorePrefixIterator(store, prefixKey)
+	
+	// May want to limit endBlocker processing to max number of iterations
+	var keys [][]byte
+	for iter.Valid() {
+		keys = append(keys, iter.Key())
+		index := len([]byte(ballot.Identifier + "votes"))
+		owner := iter.Key()[index:]
+
+		vz := iter.Value()
+		vote := &tcr.Vote{}
+		app.cdc.UnmarshalBinary(vz, vote)
+
+		if correctVote == vote.Choice {
+			reward := vote.Power + int64(float64(vote.Power) / pool * float64(ballot.Bond) * app.dispensationPct)
+			app.accountKeeper.AddCoins(ctx, owner, sdk.Coins{{"RegistryCoin", reward}})
+		} else {
+			app.accountKeeper.AddCoins(ctx, owner, sdk.Coins{{"RegistryCoin", vote.Power}})
+		}
+		iter.Next()
+	}
+	iter.Close()
+
+	for _, k := range keys {
+		// Delete votes
+		store.Delete(k)
+	}
+
+	return abci.ResponseEndBlock{}
 }
 
 func (app *RegistryApp) txDecoder(txBytes []byte) (sdk.Tx, sdk.Error) {
