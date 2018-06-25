@@ -85,3 +85,40 @@ The counterparty (challenge is counterparty to candidate and vice-versa) gets th
 A winning voter gets his bond back along with a reward = (1 - dispensationPct) * bond * (voter.Power / total_power)
 
 Losing voters get their bond back with no reward.
+
+Ballots are the way the application keeps track of the status of candidates for listing in the registry:
+
+```go
+type Ballot struct {
+	Identifier          string
+	Details             string
+	Owner               sdk.Address
+	Challenger          sdk.Address
+	Active              bool
+	Approve             int64
+	Deny                int64
+	Bond                int64
+	EndApplyBlockStamp  int64
+	EndCommitBlockStamp int64
+}
+```
+
+The ballot can be initialized with a unique identity, details, owner, and the end blockstamp of the application phase.
+If the ballot becomes challenged (activated), the end of the commit phase is set, and the end of the apply phase is updated
+to the end of the reveal phase.
+During the reveal phase, valid votes update the Approve and Deny totals respectively. At the end of the reveal phase, 
+the application will automatically finalize the ballot and distribute rewards as described above. Note the ballot remains in the 
+registry as a deactivated ballot. If the ballot wins the challenge, a listing with the given identifier gets added to the registry.
+
+Listings exist in the store if and only if the candidate won the most recent application/challenge.
+
+```go
+type Listing struct {
+	Identifier string
+	Votes      int64
+}
+```
+
+They also include the approve votes they won in the last challenge, which may be useful to display the approved listings in order.
+Note: Listings that have been approved may be challenged again, at which point the listing continues to be in the registry for the duration of the challenge. If the listing loses the challenge, it is removed from the registry. If the listing wins the challenge, 
+then it's Votes field gets updated with the latest approve vote total.
