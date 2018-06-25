@@ -25,8 +25,20 @@ func NewCandidacyHandler(accountKeeper bank.Keeper, ballotKeeper db.BallotKeeper
 			return err.Result()
 		}
 
+		// Check that declared candidate not already existing candidate/listing
+		listing := ballotKeeper.GetListing(ctx, declareMsg.Identifier)
 		ballot := ballotKeeper.GetBallot(ctx, declareMsg.Identifier)
-		if !reflect.DeepEqual(ballot, tcr.Ballot{}) {
+		if reflect.DeepEqual(listing, tcr.Listing{}) && !reflect.DeepEqual(ballot, tcr.Ballot{}) {
+			// reset ballot
+			ballot.Approve = 0
+			ballot.Deny = 0
+			ballot.Active = false
+			ballot.EndCommitBlockStamp = 0
+			ballot.EndApplyBlockStamp = ctx.BlockHeight() + applyLen
+			// Must push again because old ballot was popped off
+			ballotKeeper.ProposalQueuePush(ctx, declareMsg.Identifier, ballot.EndApplyBlockStamp)
+			return sdk.Result{}
+		} else if !reflect.DeepEqual(ballot, tcr.Ballot{}) {
 			return tcr.ErrInvalidBallot(2, "Candidate already exists").Result()
 		}
 
@@ -62,7 +74,7 @@ func NewChallengeHandler(accountKeeper bank.Keeper, ballotKeeper db.BallotKeeper
 			panic(err2)
 		}
 
-		if ballot.EndCommitBlockStamp != 0 {
+		if ballot.Active {
 			return tcr.ErrInvalidPhase(2, "Candidate has already been challenged").Result()
 		}
 

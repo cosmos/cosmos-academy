@@ -94,6 +94,15 @@ func (bk BallotKeeper) ActivateBallot(ctx sdk.Context, accountKeeper bank.Keeper
 	return nil
 }
 
+func (bk BallotKeeper) DeactivateBallot(ctx sdk.Context, identifier string) {
+	store := ctx.KVStore(bk.BallotKey)
+	ballot := bk.GetBallot(ctx, identifier)
+	ballot.Active = false
+	newBallot, _ := bk.Cdc.MarshalBinary(ballot)
+	key := []byte(identifier)
+	store.Set(key, newBallot)
+} 
+
 func (bk BallotKeeper) CommitBallot(ctx sdk.Context, owner sdk.Address, identifier string, commitment []byte) {
 	commitKey := []byte(identifier)
 	commitKey = append(commitKey, []byte("commits")...)

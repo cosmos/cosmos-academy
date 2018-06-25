@@ -191,6 +191,8 @@ func (app *RegistryApp) endBlocker(ctx sdk.Context, req abci.RequestEndBlock) (r
 		store.Delete(k)
 	}
 
+	app.ballotKeeper.DeactivateBallot(ctx, ballot.Identifier)
+
 	return abci.ResponseEndBlock{}
 }
 
