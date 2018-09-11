@@ -1,3 +1,4 @@
 docs/_build
 docs/content/glossary.rst
 example-apps/covenant/vendor
+.DS_Store
