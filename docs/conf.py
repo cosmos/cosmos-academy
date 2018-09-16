@@ -176,10 +176,7 @@ texinfo_documents = [
 
 ######### get & make glossary ################
 
-the_url = 'https://raw.githubusercontent.com/tendermint/aib-data/develop/json/glossary.json'
-temp_file = 'content/temp-glossary.json'
-
-urllib.urlretrieve(the_url, filename=temp_file)
+temp_file = 'glossary.json'
 
 glossy = open('content/glossary.rst', 'w')
 
