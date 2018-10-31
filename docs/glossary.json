@@ -147,14 +147,14 @@
     "id": "pos",
     "title": "Proof-of-Stake",
     "body":
-      "Poof-of-Stake is a method of consensus in which uses the token itself to secure the network, which acts as a sort of virtualized ASIC, instead of using physical hardware to burn through electricity in order to do so.",
+      "Poof-of-Stake is a method of consensus which uses the token itself to secure the network, which acts as a sort of virtualized ASIC, instead of using physical hardware to burn through electricity in order to do so.",
     "url": ""
   },
   {
     "id": "pow",
     "title": "Proof-of-Work",
     "body":
-      "Proof-of-Work is a method of consensus in which uses hardware to burn through electricity in order to secure a decentralized network and mine blocks which form a blockchain.",
+      "Proof-of-Work is a method of consensus which uses hardware to burn through electricity in order to secure a decentralized network and mine blocks which form a blockchain.",
     "url": ""
   },
   {
